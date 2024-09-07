@@ -1,9 +1,9 @@
-const UserPage: React.FC = () => {
+const PaymentsPage: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen justify-center items-center">
-      User Page
+      Payments Page
     </div>
   );
 };
 
-export default UserPage;
+export default PaymentsPage;

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "../globals.css";
 import Header from "@/components/header";
 
 export const metadata: Metadata = {
@@ -13,9 +12,9 @@ export default function SessionLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <section className="grid">
       <Header />
       {children}
-    </>
+    </section>
   );
 }
