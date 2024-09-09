@@ -1,10 +1,14 @@
 "use client";
 
+import { isValidSession } from "@/app/lib/session";
 import Item from "@/components/item";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 
 const DashBoard: React.FC = () => {
+  const session = "example-session"; //NOTE Change string to simulate invalid session
+  !isValidSession(session) && redirect("/login");
   const path = usePathname();
+
   return (
     <div className="bg-gray-100 p-4 sm:p-8 md:p-16 mt-20">
       <div className="container mx-auto">

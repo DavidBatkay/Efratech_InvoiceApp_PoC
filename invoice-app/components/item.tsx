@@ -1,6 +1,5 @@
-import { AppProps } from "next/app";
 import Link from "next/link";
-import { DetailedHTMLProps, ReactNode } from "react";
+import { ReactNode } from "react";
 
 const Item: React.FC<{
   children: ReactNode;
