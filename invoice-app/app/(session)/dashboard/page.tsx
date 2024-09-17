@@ -4,9 +4,10 @@ import { isValidSession } from "@/app/lib/session";
 import Item from "@/components/item";
 import { redirect, usePathname } from "next/navigation";
 
+const session = "example-session"; //NOTE Change string to simulate invalid session
+!isValidSession(session) && redirect("/login");
+
 const DashBoard: React.FC = () => {
-  const session = "example-session"; //NOTE Change string to simulate invalid session
-  !isValidSession(session) && redirect("/login");
   const path = usePathname();
 
   return (
