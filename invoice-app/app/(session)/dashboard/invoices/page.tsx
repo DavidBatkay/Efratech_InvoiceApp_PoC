@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-
+import Invoice from "@/components/invoice";
 const InvoicePage: React.FC = async () => {
   const invoices = [
     { id: 123, name: "Microsoft Invoice" },
@@ -8,9 +8,14 @@ const InvoicePage: React.FC = async () => {
 
   return (
     <div className="flex flex-col min-h-screen justify-center items-center">
-      <ul className="flex flex-col gap-y-2">
+      <ul className="grid flex-col gap-y-2">
         {invoices.map((invoice: any) => (
-          <li key={invoice.id}>{invoice.name}</li>
+          <li key={invoice.id}>
+            <Invoice
+              invoiceId={invoice.id}
+              invoiceTitle={invoice.name}
+            ></Invoice>
+          </li>
         ))}
       </ul>
     </div>
