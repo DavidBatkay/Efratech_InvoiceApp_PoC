@@ -10,7 +10,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id      String   @id @default(cuid())
-  name    String
+model Invoice {
+  id             Int       @id @default(autoincrement())
+  companyName    String
+  dateOfCreation DateTime  @default(now())
+  totalValue     Float
+  invoiceNumber  String    @unique
+  dueDate        DateTime
+  status         String    // NOTE Store status as a String (e.g., "PENDING", "PAID", "OVERDUE" etc.)
+  lineItems      LineItem[]
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model LineItem {
+  id          Int     @id @default(autoincrement())
+  description String
+  quantity    Int
+  unitPrice   Float
+  invoiceId   Int
+  invoice     Invoice @relation(fields: [invoiceId], references: [id])
 }

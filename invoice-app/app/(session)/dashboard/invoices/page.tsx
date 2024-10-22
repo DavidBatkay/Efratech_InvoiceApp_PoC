@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import Invoice from "@/components/invoice";
 const InvoicePage: React.FC = async () => {
   const invoices = [
