@@ -16,6 +16,7 @@ export async function getInvoiceById(id: number) {
 }
 
 export async function getAllInvoices() {
+  console.log("HERE");
   return await prisma.invoice.findMany({
     include: { lineItems: true },
   });
