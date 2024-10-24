@@ -1,0 +1,112 @@
+import React from "react";
+
+type LineItem = {
+  id: number;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  invoiceId: number;
+};
+
+type Invoice = {
+  id: number;
+  companyName: string;
+  dateOfCreation: Date;
+  invoiceNumber: string;
+  dueDate: Date;
+  status: string;
+  notes?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  totalValue: number;
+  lineItems: LineItem[];
+};
+
+interface InvoiceComponentProps {
+  invoice: Invoice;
+}
+
+const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
+  return (
+    <div className="flex flex-col min-h-screen justify-center items-center bg-inherit py-10">
+      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-3xl">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">Invoice</h1>
+
+        {/* Invoice Header */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-2">
+            <div className="text-lg text-gray-600">
+              <p className="font-semibold">Invoice #:</p>{" "}
+              {invoice.invoiceNumber}
+            </div>
+            <div className="text-lg text-gray-600">
+              <p className="font-semibold">Status:</p>
+              <span
+                className={`px-2 py-1 rounded-full ${
+                  invoice.status === "PAID"
+                    ? "bg-green-100 text-green-600"
+                    : invoice.status === "PENDING"
+                    ? "bg-yellow-100 text-yellow-600"
+                    : "bg-red-100 text-red-600"
+                }`}
+              >
+                {invoice.status}
+              </span>
+            </div>
+          </div>
+          <div className="text-sm text-gray-500">
+            <p>
+              Company:{" "}
+              <span className="font-medium">{invoice.companyName}</span>
+            </p>
+            <p>
+              Date of Creation: {invoice.dateOfCreation.toLocaleDateString()}
+            </p>
+            <p>Due Date: {invoice.dueDate.toLocaleDateString()}</p>
+          </div>
+        </div>
+
+        {/* Notes */}
+        {invoice.notes && (
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-gray-700">Notes:</h2>
+            <p className="text-sm text-gray-500">{invoice.notes}</p>
+          </div>
+        )}
+
+        {/* Line Items */}
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-gray-700 mb-2">Services</h2>
+          <div className="space-y-4">
+            {invoice.lineItems.map((lineItem) => (
+              <div
+                key={lineItem.id}
+                className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm"
+              >
+                <div>
+                  <p className="font-medium text-gray-700">
+                    {lineItem.description}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-gray-600">Quantity: {lineItem.quantity}</p>
+                  <p className="text-gray-600">
+                    Unit Price: ${lineItem.unitPrice.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer with timestamps */}
+        <div className="text-sm text-gray-500 border-t pt-4">
+          <p>Created at: {invoice.createdAt.toLocaleDateString()}</p>
+          <p>Updated at: {invoice.updatedAt.toLocaleDateString()}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default InvoiceComponent;

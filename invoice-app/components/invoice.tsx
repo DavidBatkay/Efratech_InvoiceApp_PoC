@@ -5,7 +5,7 @@ const Invoice: React.FC<{ invoiceId: String; invoiceTitle: String }> = ({
   invoiceTitle,
 }) => {
   return (
-    <div className="w-60 h-90 bg-stone-300  align-baseline rounded-xl grid">
+    <div className="w-60 h-90 bg-stone-300 align-baseline rounded-xl grid">
       <div className="text-center bg-stone-200 rounded-sm shadow-xl">
         Invoice #{invoiceId}
       </div>

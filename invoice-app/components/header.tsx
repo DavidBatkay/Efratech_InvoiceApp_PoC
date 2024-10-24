@@ -5,7 +5,7 @@ const Header: React.FC = () => {
   return (
     <nav className="fixed w-full h-24 shadow-xl bg-gray-200">
       <div className="flex justify-between items-center w-full h-full px-4 2xl:px-16">
-        <Link href="/dashboard">
+        <Link className="" href="/dashboard">
           <Image
             src={imagePath}
             alt="icon"
@@ -15,11 +15,12 @@ const Header: React.FC = () => {
             className="cursor-pointer"
           />
         </Link>
+
         <div>
           <Link href="/login">
             <button
               type="button"
-              className="relative inline-flex bg-slate-400 items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg  px-5"
+              className="relative inline-flex bg-gradient-to-br from-slate-400 to-slate-300 items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg  px-5"
             >
               Log Out
             </button>

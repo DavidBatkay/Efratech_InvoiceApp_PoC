@@ -4,16 +4,16 @@ import { isValidSession } from "@/app/lib/session";
 import Item from "@/components/item";
 import { redirect, usePathname } from "next/navigation";
 
-const session = "example-session"; //NOTE Change string to simulate invalid session
+const session = "example-session"; //NOTE Change string to simulate invalid session until log in works
 !isValidSession(session) && redirect("/login");
 
 const DashBoard: React.FC = () => {
   const path = usePathname();
 
   return (
-    <div className="bg-gray-100 p-4 sm:p-8 md:p-16 mt-20">
+    <div className="bg-gray-400 shadow-md rounded-lg p-4 sm:p-8 md:p-16 mt-20">
       <div className="container mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
           <Item
             href={`${path}/invoices`}
             description="See all your Invoices or create a new one"

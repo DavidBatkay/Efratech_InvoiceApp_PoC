@@ -12,9 +12,11 @@ export default function SessionLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <section className="grid">
+    <div className="min-h-screen flex flex-col">
       <Header />
-      {children}
-    </section>
+      <main className="flex-grow pt-24 bg-gradient-to-br from-slate-500 to-slate-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">{children}</div>
+      </main>
+    </div>
   );
 }
