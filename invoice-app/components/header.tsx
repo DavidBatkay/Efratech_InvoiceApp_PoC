@@ -3,19 +3,20 @@ import Image from "next/image";
 import imagePath from "../public/favicon.png";
 const Header: React.FC = () => {
   return (
-    <nav className="fixed w-full h-24 shadow-xl bg-gray-200">
+    <nav className="fixed w-full h-24 shadow-2xl bg-gradient-to-b from-gray-200 to-gray-300">
       <div className="flex justify-between items-center w-full h-full px-4 2xl:px-16">
-        <Link className="" href="/dashboard">
-          <Image
-            src={imagePath}
-            alt="icon"
-            width="80"
-            height="80"
-            priority
-            className="cursor-pointer"
-          />
-        </Link>
-
+        <div className="flex ">
+          <Link href="/dashboard">
+            <Image
+              src={imagePath}
+              alt="icon"
+              width="80"
+              height="80"
+              priority
+              className="cursor-pointer"
+            />
+          </Link>
+        </div>
         <div>
           <Link href="/login">
             <button
@@ -25,7 +26,9 @@ const Header: React.FC = () => {
               Log Out
             </button>
           </Link>
-          <Link href="/user">My Account</Link>
+          <button>
+            <Link href="/user">My Account</Link>
+          </button>
         </div>
       </div>
     </nav>

@@ -26,11 +26,14 @@ const DashBoard: React.FC = () => {
           >
             Payments
           </Item>
-          <Item href={`${path}`} description="Manage your customer base">
+          <Item
+            href={`${path}/customers`}
+            description="Manage your customer base"
+          >
             Manage Customers
           </Item>
 
-          <Item href={`${path}`} description="Manage All Users">
+          <Item href={`${path}/users`} description="Manage All Users">
             Manage Users
           </Item>
         </div>

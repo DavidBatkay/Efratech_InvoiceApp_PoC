@@ -21,7 +21,7 @@ const InvoiceIdPage: React.FC<{ params: any }> = async ({ params }) => {
               width={40}
               height={40}
             />
-          </Link>{" "}
+          </Link>
         </button>
       </div>
 

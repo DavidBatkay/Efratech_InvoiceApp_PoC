@@ -1,6 +1,6 @@
 const PaymentsPage: React.FC = () => {
   return (
-    <div className="flex flex-col min-h-screen justify-center items-center">
+    <div className="bold text-3xl flex flex-col min-h-screen justify-center items-center">
       Payments Page
     </div>
   );
