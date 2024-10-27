@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Button from "./button";
 
 interface InvoiceProps {
   invoiceId: string;
@@ -33,13 +34,11 @@ const Invoice: React.FC<InvoiceProps> = ({
         <span className="text-black font-semibold">{invoiceTotalValue} $</span>
       </div>
 
-      <Link
+      <Button
         href={`./invoices/${invoiceId}`}
-        aria-label={`View details for invoice ${invoiceId}`}
-        className="bg-gradient-to-br from-blue-400 to-blue-600 hover:bg-blue-700 text-white text-center font-bold py-2 px-4 rounded-md mt-4"
-      >
-        Details
-      </Link>
+        aria_label={`View details for invoice ${invoiceId}`}
+        label="Details"
+      />
     </div>
   );
 };

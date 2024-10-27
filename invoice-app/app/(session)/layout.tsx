@@ -14,11 +14,8 @@ export default function SessionLayout({
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-
+      
       <main className="flex-grow pt-24 bg-gradient-to-br from-slate-500 via-gray-600 to-slate-700">
-        <span className="bold text-3xl text-white flex flex-col mt-5 justify-center items-center">
-          Welcome back {"user"}!
-        </span>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">{children}</div>
       </main>
     </div>

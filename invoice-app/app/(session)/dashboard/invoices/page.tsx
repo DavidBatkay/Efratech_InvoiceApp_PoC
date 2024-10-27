@@ -1,11 +1,11 @@
-import CreateInvoiceButton from "@/components/createInvoiceButton";
+import CreateInvoiceButton from "@/components/createInvoice";
 import Invoice from "@/components/invoice";
 import { getAllInvoices } from "@/dao/invoice.dao";
 const InvoicePage: React.FC = async () => {
   const invoices = await getAllInvoices(); //NOTE fixed
   return (
     <div className="flex container mx-auto flex-col min-h-screen justify-center items-center">
-      <ul className="grid flex-auto gap-y-2 pt-10">
+      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
         <li>
           <CreateInvoiceButton />
         </li>
