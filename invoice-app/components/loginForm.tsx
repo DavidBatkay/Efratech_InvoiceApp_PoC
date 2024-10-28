@@ -1,28 +1,51 @@
 "use client";
 
+import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useState } from "react";
 
 const LoginForm: React.FC<{ type?: string }> = ({ type }) => {
-  const onSubmit = () => {
-    console.log("form submitted!");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    // Call the signIn function with credentials
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+
+    console.log(result);
+    // Check if there was an error
+    if (result?.error) {
+      setError("Invalid email or password");
+      console.error("Login Error: ", result.error);
+    } else {
+      // Successful login
+      console.log("Login successful!", result);
+      // Optionally, redirect to another page
+    }
   };
   const isSignup = type && type === "signup";
   return (
     <div className="w-full max-w-xs">
       <form
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
         className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
       >
         <div className="mb-4">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="username"
+            htmlFor="email"
           >
-            Username
+            Email
           </label>
           <input
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="username"
+            id="email"
             type="text"
           />
         </div>

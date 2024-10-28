@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import prisma from "@/lib/prisma";
 
 const initialInvoices = [
@@ -64,14 +63,45 @@ const initialInvoices = [
   },
 ];
 
-const seed = async () => {
-  // NOTE Clean up before seeding (optional)
-  await prisma.invoice.deleteMany();
+const initialUsers = [
+  {
+    user_id: 1,
+    email: "john.doe@example.com",
+    password: "password123", // Make sure to hash passwords in production!
+    username: "johndoe",
+    name: "John Doe",
+  },
+  {
+    user_id: 2,
+    email: "jane.smith@example.com",
+    password: "password456",
+    username: "janesmith",
+    name: "Jane Smith",
+  },
+];
 
+const seed = async () => {
+  // Clean up existing data (optional)
+  await prisma.invoice.deleteMany();
+  await prisma.user.deleteMany(); // Clear users before seeding
+
+  // Seed users
+  prisma.user.createMany({ data: initialUsers });
+
+  // Get the first user to associate invoices
+  const firstUser = await prisma.user.findFirst();
+
+  if (!firstUser) {
+    console.error("No user found to associate invoices. Exiting.");
+    return; // Exit if no user exists
+  }
+
+  // Seed invoices associated with the first user
   for (const invoice of initialInvoices) {
     await prisma.invoice.create({
       data: {
         ...invoice,
+        user_id: firstUser.user_id, // Ensure you use user_id and it exists
         lineItems: {
           create: invoice.lineItems,
         },

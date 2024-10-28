@@ -22,6 +22,10 @@ model Invoice {
   notes          String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+  
+ // Foreign key to User model
+  user_id        Int       // This links to the User table via user_id
+  user           User      @relation(fields: [user_id], references: [user_id]) // Relation field referencing User
 }
 
 model LineItem {
@@ -31,4 +35,15 @@ model LineItem {
   unitPrice   Float
   invoiceId   Int
   invoice     Invoice @relation(fields: [invoiceId], references: [id])
+}
+
+model User {
+  user_id   Int       @id @default(autoincrement())
+  email     String    @unique
+  username  String?   @unique
+  password  String?
+  name      String?
+  invoices  Invoice[]
+
+  @@map("users") // Optional: maps to "users" table in the database
 }
