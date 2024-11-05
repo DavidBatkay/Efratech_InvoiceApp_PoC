@@ -1,7 +1,27 @@
 import prisma from "@/lib/prisma";
+import { connect } from "http2";
+
+const initialUsers = [
+  {
+    user_id: 1,
+    email: "john.doe@example.com",
+    password: "password123", //NOTE without hash only outside of production
+    username: "johndoe",
+    name: "John Doe",
+  },
+  {
+    user_id: 2,
+    email: "jane.smith@example.com",
+    password: "password456",
+    username: "janesmith",
+    name: "Jane Smith",
+  },
+];
 
 const initialInvoices = [
   {
+    user: initialUsers[1],
+    user_id: 1,
     companyName: "Acme Corp",
     totalValue: 5000.0,
     invoiceNumber: "INV-2024-001",
@@ -14,6 +34,8 @@ const initialInvoices = [
     ],
   },
   {
+    user: initialUsers[1],
+    user_id: 1,
     companyName: "Beta LLC",
     totalValue: 1500.0,
     invoiceNumber: "INV-2024-002",
@@ -26,6 +48,8 @@ const initialInvoices = [
     ],
   },
   {
+    user: initialUsers[1],
+    user_id: 1,
     companyName: "Gamma Inc.",
     totalValue: 3200.5,
     invoiceNumber: "INV-2024-003",
@@ -38,6 +62,7 @@ const initialInvoices = [
     ],
   },
   {
+    user_id: 1,
     companyName: "Delta Co.",
     totalValue: 980.0,
     invoiceNumber: "INV-2024-004",
@@ -50,6 +75,7 @@ const initialInvoices = [
     ],
   },
   {
+    user_id: 1,
     companyName: "Epsilon Group",
     totalValue: 4500.75,
     invoiceNumber: "INV-2024-005",
@@ -63,30 +89,15 @@ const initialInvoices = [
   },
 ];
 
-const initialUsers = [
-  {
-    user_id: 1,
-    email: "john.doe@example.com",
-    password: "password123", // Make sure to hash passwords in production!
-    username: "johndoe",
-    name: "John Doe",
-  },
-  {
-    user_id: 2,
-    email: "jane.smith@example.com",
-    password: "password456",
-    username: "janesmith",
-    name: "Jane Smith",
-  },
-];
-
 const seed = async () => {
   // Clean up existing data (optional)
   await prisma.invoice.deleteMany();
   await prisma.user.deleteMany(); // Clear users before seeding
 
-  // Seed users
-  prisma.user.createMany({ data: initialUsers });
+  // Seed users individually
+  for (const user of initialUsers) {
+    await prisma.user.create({ data: user });
+  }
 
   // Get the first user to associate invoices
   const firstUser = await prisma.user.findFirst();
@@ -100,14 +111,29 @@ const seed = async () => {
   for (const invoice of initialInvoices) {
     await prisma.invoice.create({
       data: {
-        ...invoice,
-        user_id: firstUser.user_id, // Ensure you use user_id and it exists
+        companyName: invoice.companyName,
+        totalValue: invoice.totalValue,
+        invoiceNumber: invoice.invoiceNumber,
+        dueDate: invoice.dueDate,
+        status: invoice.status,
+        notes: invoice.notes,
+        user: {
+          connect: { user_id: firstUser.user_id }, // Replace `id` with your primary key field name if different
+        },
         lineItems: {
           create: invoice.lineItems,
         },
       },
     });
   }
+
+  console.log("Seeding completed successfully!");
 };
 
-seed();
+seed()
+  .catch((e) => {
+    console.error("Error seeding data:", e);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

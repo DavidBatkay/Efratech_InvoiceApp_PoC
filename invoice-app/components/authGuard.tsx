@@ -19,7 +19,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   }, [status, router]);
 
   if (status === "loading") {
-    return <div>Loading...</div>; // You can customize the loading state
+    return <div>Loading...</div>; //NOTE You can customize the loading state
   }
 
   return <>{children}</>; // Render the protected children if authenticated

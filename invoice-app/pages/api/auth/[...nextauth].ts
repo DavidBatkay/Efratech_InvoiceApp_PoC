@@ -21,27 +21,40 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        if (!credentials?.email || !credentials.password) return null;
+        console.log(
+          "Attempting to authorize user with email:",
+          credentials?.email
+        );
+
+        if (!credentials?.email || !credentials.password) {
+          console.log("Missing credentials");
+          return null; // Return null if email or password is missing
+        }
 
         // Fetch the user from the database
         const user: PrismaUser | null = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
 
-        // Check if user exists and validate password
-        if (user && user.password === credentials.password) {
+        if (!user) {
+          console.log("User not found");
+          return null; // User does not exist
+        }
+
+        // Check if user exists and validate the password directly
+        if (user.password === credentials.password) {
+          console.log("User authenticated successfully:", user);
           // Return a user object that matches the expected type
           return {
             id: user.user_id.toString(), // Map user_id to id
             email: user.email,
             username: user.username,
             name: user.name,
-            // Add image if you have it in your user model
-            // image: user.image,
           };
+        } else {
+          console.log("Invalid password");
+          return null; // Return null if password is invalid
         }
-
-        return null; // Return null if authentication fails
       },
     }),
     // Additional providers can be added here if needed
