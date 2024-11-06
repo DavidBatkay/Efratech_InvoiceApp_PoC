@@ -1,18 +1,25 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { ChangeEvent, useState } from "react";
+import prisma from "@/lib/prisma";
+import { createUser } from "@/dao/user.dao";
+import { redirect } from "next/navigation";
 
-const LoginForm: React.FC = () => {
+const SignupForm: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [confirmEmail, setConfirmEmail] = useState("");
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     console.log("Email:", e.target.value); // Log email change
+  };
+
+  const handleConfirmEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setConfirmEmail(e.target.value);
+    console.log("Confirm Email:", e.target.value); // Log email change
   };
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -23,24 +30,16 @@ const LoginForm: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     console.log(email, password);
-    // Call the signIn function with credentials
-    const result = await signIn("credentials", {
-      redirect: false,
-      email: email,
-      password: password,
-    });
-
-    console.log("SignIn result:", result); // Log the result to check response
 
     // Check if there was an error
-    if (result?.error) {
-      setError("Invalid email or password");
-      console.error("Login Error: ", result.error);
+    if (confirmEmail !== email || !email.includes("@")) {
+      setError("Email and Confirm Email are not valid");
+      console.error("Signup Error: ", error);
     } else {
       // Successful login
-      console.log("Login successful!", result);
-      // Optionally, redirect to another page
-      redirect("/dashboard");
+      console.log("Signup successful!");
+      createUser({ email: email, password: password });
+      redirect("/login");
     }
   };
 
@@ -65,6 +64,21 @@ const LoginForm: React.FC = () => {
             onChange={(e) => handleEmailChange(e)}
           />
         </div>
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="confirmEmail"
+          >
+            Confirm Email
+          </label>
+          <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="confirmEmail"
+            type="email"
+            value={confirmEmail} // Set value to state
+            onChange={(e) => handleConfirmEmailChange(e)}
+          />
+        </div>
         <div className="mb-6">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
@@ -86,10 +100,10 @@ const LoginForm: React.FC = () => {
             type="submit" // Change to submit button
             className="text-white bg-blue-400 dark:bg-blue-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:bg-blue-600 hover:dark:bg-blue-700"
           >
-            {"Log In"}
+            Sign up
           </button>
-          <Link className="opacity-55 hover:text-gray-600" href={"/signup"}>
-            {"Sign up"} instead?
+          <Link className="opacity-55 hover:text-gray-600" href={"/login"}>
+            {"Log in"} instead?
           </Link>
         </div>
       </form>
@@ -99,4 +113,4 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm;
+export default SignupForm;

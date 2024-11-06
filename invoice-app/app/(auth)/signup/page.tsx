@@ -1,7 +1,7 @@
-import LoginForm from "@/components/loginForm";
+import SignupForm from "@/components/signupForm";
 
 const LoginPage: React.FC = () => {
-  return <LoginForm type="signup"></LoginForm>;
+  return <SignupForm />;
 };
 
 export default LoginPage;
