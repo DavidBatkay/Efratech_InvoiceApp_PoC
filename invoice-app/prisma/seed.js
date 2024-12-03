@@ -18,7 +18,7 @@ const initialUsers = [
 const initialInvoices = [
   {
     user: initialUsers[1],
-    user_id: user.user_id,
+    user_id: 1,
     companyName: "Acme Corp",
     totalValue: 5000.0,
     invoiceNumber: "INV-2024-001",
@@ -32,7 +32,7 @@ const initialInvoices = [
   },
   {
     user: initialUsers[1],
-    user_id: user.user_id,
+    user_id: 1,
     companyName: "Beta LLC",
     totalValue: 1500.0,
     invoiceNumber: "INV-2024-002",
