@@ -1,6 +1,7 @@
-import { Prisma } from "@prisma/client";
-import prisma from "@/lib/prisma";
+"use server";
+import { PrismaClient, Prisma } from "@prisma/client";
 
+const prisma = new PrismaClient();
 // Create a new user
 export async function createUser(data: Prisma.UserCreateInput) {
   return await prisma.user.create({

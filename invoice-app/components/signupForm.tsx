@@ -2,22 +2,23 @@
 
 import Link from "next/link";
 import { ChangeEvent, useState } from "react";
-import prisma from "@/lib/prisma";
 import { createUser } from "@/dao/user.dao";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const SignupForm: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [confirmEmail, setConfirmEmail] = useState("");
+  const [confirmPassword, setConfirmEmail] = useState("");
+
+  const router = useRouter();
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     console.log("Email:", e.target.value); // Log email change
   };
 
-  const handleConfirmEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setConfirmEmail(e.target.value);
     console.log("Confirm Email:", e.target.value); // Log email change
   };
@@ -32,14 +33,14 @@ const SignupForm: React.FC = () => {
     console.log(email, password);
 
     // Check if there was an error
-    if (confirmEmail !== email || !email.includes("@")) {
-      setError("Email and Confirm Email are not valid");
+    if (confirmPassword !== password || !email.includes("@")) {
+      setError("password and confirm password fields are not valid");
       console.error("Signup Error: ", error);
     } else {
       // Successful login
       console.log("Signup successful!");
-      createUser({ email: email, password: password });
-      redirect("/login");
+      await createUser({ email: email, password: password });
+      router.push("/login");
     }
   };
 
@@ -64,21 +65,6 @@ const SignupForm: React.FC = () => {
             onChange={(e) => handleEmailChange(e)}
           />
         </div>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="confirmEmail"
-          >
-            Confirm Email
-          </label>
-          <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="confirmEmail"
-            type="email"
-            value={confirmEmail} // Set value to state
-            onChange={(e) => handleConfirmEmailChange(e)}
-          />
-        </div>
         <div className="mb-6">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
@@ -95,6 +81,22 @@ const SignupForm: React.FC = () => {
             required
           />
         </div>
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="confirmPassword"
+          >
+            Confirm Password
+          </label>
+          <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword} // Set value to state
+            onChange={(e) => handleConfirmPasswordChange(e)}
+          />
+        </div>
+
         <div className="flex items-center justify-between">
           <button
             type="submit" // Change to submit button

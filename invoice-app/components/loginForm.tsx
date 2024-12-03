@@ -2,13 +2,14 @@
 
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { ChangeEvent, useState } from "react";
-
+import { useRouter } from "next/navigation";
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const router = useRouter();
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -40,7 +41,7 @@ const LoginForm: React.FC = () => {
       // Successful login
       console.log("Login successful!", result);
       // Optionally, redirect to another page
-      redirect("/dashboard");
+      router.push("/dashboard");
     }
   };
 

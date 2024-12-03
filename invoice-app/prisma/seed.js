@@ -1,27 +1,24 @@
-import prisma from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
 import { connect } from "http2";
+const prisma = new PrismaClient();
 
 const initialUsers = [
   {
     user_id: 1,
     email: "john.doe@example.com",
     password: "password123", //NOTE without hash only outside of production
-    username: "johndoe",
-    name: "John Doe",
   },
   {
     user_id: 2,
     email: "jane.smith@example.com",
     password: "password456",
-    username: "janesmith",
-    name: "Jane Smith",
   },
 ];
 
 const initialInvoices = [
   {
     user: initialUsers[1],
-    user_id: 1,
+    user_id: user.user_id,
     companyName: "Acme Corp",
     totalValue: 5000.0,
     invoiceNumber: "INV-2024-001",
@@ -35,7 +32,7 @@ const initialInvoices = [
   },
   {
     user: initialUsers[1],
-    user_id: 1,
+    user_id: user.user_id,
     companyName: "Beta LLC",
     totalValue: 1500.0,
     invoiceNumber: "INV-2024-002",
