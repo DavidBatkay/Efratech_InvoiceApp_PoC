@@ -13,17 +13,14 @@ const LoginForm: React.FC = () => {
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
-    console.log("Email:", e.target.value); // Log email change
   };
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    console.log("Password:", e.target.value); // Log password change
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log(email, password);
     // Call the signIn function with credentials
     const result = await signIn("credentials", {
       redirect: false,
@@ -93,9 +90,9 @@ const LoginForm: React.FC = () => {
             {"Sign up"} instead?
           </Link>
         </div>
+        {error && <p className="text-red-400 mt-4">{error}</p>}{" "}
+        {/* Display error if any */}
       </form>
-      {error && <p className="text-red-500">{error}</p>}{" "}
-      {/* Display error if any */}
     </div>
   );
 };

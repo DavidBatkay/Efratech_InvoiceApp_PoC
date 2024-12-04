@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import imagePath from "../public/favicon.png";
+import { signOut } from "next-auth/react";
 const Header: React.FC = () => {
   return (
     <nav className="fixed w-full h-24 shadow-2xl bg-gradient-to-b from-gray-200 to-gray-300">
@@ -20,6 +21,7 @@ const Header: React.FC = () => {
         <div>
           <Link href="/login">
             <button
+              onClick={async () => await signOut()}
               type="button"
               className="relative inline-flex bg-gradient-to-br from-slate-400 to-slate-300 items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg  px-5"
             >

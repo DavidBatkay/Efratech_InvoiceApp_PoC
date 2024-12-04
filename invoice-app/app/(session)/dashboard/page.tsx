@@ -1,11 +1,7 @@
 "use client";
 
-import { isValidSession } from "@/app/lib/session";
 import Item from "@/components/item";
-import { redirect, usePathname } from "next/navigation";
-
-const session = "example-session"; //NOTE Change string to simulate invalid session for now
-!isValidSession(session) && redirect("/login");
+import { usePathname } from "next/navigation";
 
 const DashBoard: React.FC = () => {
   const path = usePathname();
@@ -13,7 +9,7 @@ const DashBoard: React.FC = () => {
   return (
     <>
       <span className="bold text-3xl text-white flex flex-col mt-5 justify-center items-center">
-        Welcome back {"user"}! {/*NOTE username from database*/}
+        Welcome back !
       </span>
       <div className="bg-gray-400 shadow-md rounded-lg p-4 sm:p-8 md:p-16 mt-20">
         <div className="container mx-auto">
@@ -36,7 +32,7 @@ const DashBoard: React.FC = () => {
             >
               Manage Customers
             </Item>
-
+            {/*TODO get only the customers from personal invoices */}
             <Item href={`${path}/users`} description="Manage All Users">
               Manage Users
             </Item>
@@ -48,4 +44,5 @@ const DashBoard: React.FC = () => {
 };
 
 /*NOTE managing pages not yet done */
+
 export default DashBoard;

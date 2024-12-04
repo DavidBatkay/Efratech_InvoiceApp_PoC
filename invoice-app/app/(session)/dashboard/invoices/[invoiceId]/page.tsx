@@ -11,7 +11,7 @@ const InvoiceIdPage: React.FC<{ params: any }> = async ({ params }) => {
 
   return (
     <div className="">
-      <div className="fixed mt-12 ml-20">
+      <div className="fixed ml-20 -mt-16 sm:mt-12 sm:ml-20">
         <button>
           <Link className="w-1 h-1" href={"/dashboard/invoices"}>
             <img
