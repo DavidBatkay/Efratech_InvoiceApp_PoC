@@ -4,7 +4,7 @@ import imagePath from "../public/favicon.png";
 import { signOut } from "next-auth/react";
 const Header: React.FC = () => {
   return (
-    <nav className="fixed w-full h-24 shadow-2xl bg-gradient-to-b from-gray-200 to-gray-300">
+    <nav className="fixed w-full h-24 shadow-2xl bg-gradient-to-b from-gray-200 to-gray-300 z-50">
       <div className="flex justify-between items-center w-full h-full px-4 2xl:px-16">
         <div className="flex ">
           <Link href="/dashboard">
