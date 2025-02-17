@@ -1,34 +1,24 @@
 "use client";
 
-import prisma from "@/lib/prisma";
-import { redirect } from "next/navigation";
-import React, { useState } from "react";
-
-type LineItem = {
-  description: string;
-  quantity: number;
-  unitPrice: number;
-};
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const InvoiceFormComponent: React.FC = () => {
+  const router = useRouter();
   const [form, setForm] = useState({
     companyName: "",
     totalValue: 0,
-    invoiceNumber: `INV-2024-${Date.now().toString().slice(-6)}`,
+    invoiceNumber: `INV-2024-${Date.now().toString().slice(-6)}-${Math.floor(
+      Math.random() * 1000
+    )}`,
     dueDate: "",
     status: "PENDING",
     notes: "",
-    lineItems: [
-      {
-        description: "",
-        quantity: 1,
-        unitPrice: 0,
-      },
-    ],
-    user: null,
+    lineItems: [{ description: "", quantity: 1, unitPrice: 0 }],
+    user: null, // Update this dynamically if needed
   });
+  const [showModal, setShowModal] = useState(false);
 
-  // Handle input change
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -36,7 +26,6 @@ const InvoiceFormComponent: React.FC = () => {
     setForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
-  // Handle Line Item change
   const handleLineItemChange = (
     index: number,
     name: string,
@@ -44,13 +33,9 @@ const InvoiceFormComponent: React.FC = () => {
   ) => {
     const updatedLineItems = [...form.lineItems];
     updatedLineItems[index] = { ...updatedLineItems[index], [name]: value };
-    setForm((prevForm) => ({
-      ...prevForm,
-      lineItems: updatedLineItems,
-    }));
+    setForm((prevForm) => ({ ...prevForm, lineItems: updatedLineItems }));
   };
 
-  // Add new line item
   const addLineItem = () => {
     setForm((prevForm) => ({
       ...prevForm,
@@ -61,7 +46,6 @@ const InvoiceFormComponent: React.FC = () => {
     }));
   };
 
-  // Calculate total value
   const calculateTotalValue = () => {
     return form.lineItems.reduce(
       (acc, item) => acc + item.quantity * item.unitPrice,
@@ -69,36 +53,34 @@ const InvoiceFormComponent: React.FC = () => {
     );
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
 
     try {
-      // Construct the data object based on the form state
       const invoiceData = {
         companyName: form.companyName,
         totalValue: calculateTotalValue(),
-        invoiceNumber: form.invoiceNumber, // Auto-generated
-        dueDate: new Date(form.dueDate), // Convert to Date object
-        status: new Date(form.dueDate) < new Date() ? "OVERDUE" : "PENDING", // Logic for status
-        notes: form.notes || null, // Notes are optional
-        lineItems: {
-          create: form.lineItems.map((item) => ({
-            description: item.description,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-          })),
-        },
-        user: null,
+        invoiceNumber: form.invoiceNumber,
+        dueDate: form.dueDate,
+        status: new Date(form.dueDate) < new Date() ? "OVERDUE" : "PENDING",
+        notes: form.notes || null,
+        lineItems: form.lineItems,
       };
 
-      //create the invoice
-      console.log();
-      const newInvoice = await prisma.invoice.create({
-        data: invoiceData,
+      const response = await fetch("/api/invoices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(invoiceData),
       });
-      console.log("Invoice created successfully:", newInvoice);
-      redirect("/invoices");
+
+      if (!response.ok) throw new Error("Failed to create invoice");
+
+      setShowModal(true); // Show modal
+
+      setTimeout(() => {
+        setShowModal(false);
+        router.push("/dashboard/invoices"); // Redirect after modal disappears
+      }, 2000);
     } catch (error) {
       console.error("Error creating invoice:", error);
     }
@@ -114,15 +96,11 @@ const InvoiceFormComponent: React.FC = () => {
         <form onSubmit={handleSubmit}>
           {/* Company Name */}
           <div className="mb-4">
-            <label
-              className="block text-gray-700 font-semibold mb-1"
-              htmlFor="companyName"
-            >
+            <label className="block text-gray-700 font-semibold mb-1">
               Company Name
             </label>
             <input
               type="text"
-              id="companyName"
               name="companyName"
               value={form.companyName}
               onChange={handleInputChange}
@@ -133,15 +111,11 @@ const InvoiceFormComponent: React.FC = () => {
 
           {/* Due Date */}
           <div className="mb-4">
-            <label
-              className="block text-gray-700 font-semibold mb-1"
-              htmlFor="dueDate"
-            >
+            <label className="block text-gray-700 font-semibold mb-1">
               Due Date
             </label>
             <input
               type="date"
-              id="dueDate"
               name="dueDate"
               value={form.dueDate}
               onChange={handleInputChange}
@@ -152,14 +126,10 @@ const InvoiceFormComponent: React.FC = () => {
 
           {/* Notes */}
           <div className="mb-4">
-            <label
-              className="block text-gray-700 font-semibold mb-1"
-              htmlFor="notes"
-            >
+            <label className="block text-gray-700 font-semibold mb-1">
               Notes
             </label>
             <textarea
-              id="notes"
               name="notes"
               value={form.notes}
               onChange={handleInputChange}
@@ -226,14 +196,6 @@ const InvoiceFormComponent: React.FC = () => {
             </p>
           </div>
 
-          {/* Invoice Number (Non-editable) */}
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-1">
-              Invoice Number
-            </label>
-            <p className="text-gray-700 font-medium">{form.invoiceNumber}</p>
-          </div>
-
           {/* Submit Button */}
           <div className="mt-6">
             <button
@@ -245,6 +207,18 @@ const InvoiceFormComponent: React.FC = () => {
           </div>
         </form>
       </div>
+
+      {/* Success Modal */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h2 className="text-xl font-semibold text-green-600">
+              Invoice Created!
+            </h2>
+            <p className="text-gray-700">You will be redirected shortly...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

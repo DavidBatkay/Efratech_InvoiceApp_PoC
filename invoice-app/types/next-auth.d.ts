@@ -2,14 +2,18 @@
 import NextAuth from "next-auth";
 
 declare module "next-auth" {
+  interface User {
+    user_id: number;
+  }
+
   interface Session {
     user: {
-      user_id: number; // Match the type from your User model
-      email: string; // Include this if needed
-      username?: string | null; // Optional, if you decide to include it
-      name?: string | null; // Optional
-      // Remove image if you don't need it
+      user_id: number;
+      email: string;
     };
-    expires: ISODateString; // Include this to match the default session structure
+  }
+
+  interface JWT {
+    user_id: number;
   }
 }

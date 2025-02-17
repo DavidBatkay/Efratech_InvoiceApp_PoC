@@ -21,64 +21,61 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        console.log(
-          "Attempting to authorize user with email:",
-          credentials?.email
-        );
+        console.log("Attempting to authorize user:", credentials?.email);
 
         if (!credentials?.email || !credentials.password) {
           console.log("Missing credentials");
-          return null; // Return null if email or password is missing
+          return null;
         }
 
-        // Fetch the user from the database
         const user: PrismaUser | null = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
 
         if (!user) {
           console.log("User not found");
-          return null; // User does not exist
+          return null;
         }
 
-        // Check if user exists and validate the password directly
         if (user.password === credentials.password) {
           console.log("User authenticated successfully:", user);
-          // Return a user object that matches the expected type
           return {
-            id: user.user_id.toString(), // Map user_id to id
+            id: user.user_id.toString(), // ✅ Make sure user_id is included
             email: user.email,
-            username: user.username,
             name: user.name,
+            user_id: user.user_id, // 🔥 Add this to pass user_id to NextAuth
           };
         } else {
           console.log("Invalid password");
-          return null; // Return null if password is invalid
+          return null;
         }
       },
     }),
-    // Additional providers can be added here if needed
   ],
   adapter: PrismaAdapter(prisma),
   session: {
-    strategy: "jwt", // Using JWT for session strategy
+    strategy: "jwt",
   },
   callbacks: {
-    async session({ session, token }) {
-      if (token?.sub) {
-        // Check if token.sub is defined
-        session.user.user_id = Number(token.sub); // Convert to number
-      }
-      return session;
-    },
     async jwt({ token, user }) {
       if (user) {
-        token.sub = user.id.toString(); // Store id as a string in the token
+        token.user_id = (user as any).user_id; // ✅ Store user_id in the token
       }
       return token;
     },
+    async session({ session, token }) {
+      // console.log("Session Callback - Token:", token);
+
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          user_id: token.user_id ?? null, // ✅ Make sure to include user_id
+        },
+      };
+    },
   },
-  secret: process.env.NEXTAUTH_SECRET, // Secret for NextAuth
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default NextAuth(authOptions);

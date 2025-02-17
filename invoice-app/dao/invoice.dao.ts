@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import prisma from "@/lib/prisma";
 
 export async function createInvoice(data: Prisma.InvoiceCreateInput) {
@@ -17,6 +17,17 @@ export async function getInvoiceById(id: number) {
 export async function getAllInvoices() {
   return await prisma.invoice.findMany({
     include: { lineItems: true },
+  });
+}
+
+export async function getInvoicesByUser(
+  user_id: number,
+  sortOrder: "asc" | "desc" = "desc"
+) {
+  return await prisma.invoice.findMany({
+    where: { user_id: user_id },
+    include: { lineItems: true },
+    orderBy: { createdAt: sortOrder }, // Dynamic sorting
   });
 }
 

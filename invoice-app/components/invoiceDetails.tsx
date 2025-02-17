@@ -36,7 +36,7 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
             <div className="text-lg text-gray-600">
-              <p className="font-semibold">Invoice #:</p>{" "}
+              <p className="font-semibold">Invoice #:</p>
               {invoice.invoiceNumber}
             </div>
             <div className="text-lg text-gray-600">
@@ -99,10 +99,19 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
           </div>
         </div>
 
-        {/* Footer with timestamps */}
-        <div className="text-sm text-gray-500 border-t pt-4">
-          <p>Created at: {invoice.createdAt.toLocaleDateString()}</p>
-          <p>Updated at: {invoice.updatedAt.toLocaleDateString()}</p>
+        {/* Footer with timestamps and total value */}
+        <div className="flex justify-between items-center border-t pt-4 text-sm text-gray-500">
+          {/* Left side: Created & Updated timestamps */}
+          <div>
+            <p>Created at: {invoice.createdAt.toLocaleDateString()}</p>
+            <p>Updated at: {invoice.updatedAt.toLocaleDateString()}</p>
+          </div>
+
+          {/* Right side: Total */}
+          <div className="text-right">
+            <p className="font-semibold">Total:</p>
+            <p className="font-bold text-lg">{invoice.totalValue} $</p>
+          </div>
         </div>
       </div>
     </div>

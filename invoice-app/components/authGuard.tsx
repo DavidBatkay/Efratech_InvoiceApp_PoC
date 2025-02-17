@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Spinner from "./spinner";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -19,7 +20,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   }, [status, router]);
 
   if (status === "loading") {
-    return <div>Loading...</div>; //NOTE You can customize the loading state
+    return <Spinner />; //NOTE You can customize the loading state
   }
 
   return <>{children}</>; // Render the protected children if authenticated
