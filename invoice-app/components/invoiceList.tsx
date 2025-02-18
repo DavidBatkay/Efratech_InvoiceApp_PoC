@@ -4,21 +4,24 @@ import { useEffect, useState } from "react";
 import CreateInvoiceButton from "@/components/createInvoice";
 import Invoice from "@/components/invoice";
 
-const InvoiceList: React.FC<{ userId: number }> = ({ userId }) => {
+const InvoiceList: React.FC<{ userId: number; fetchUrl: string }> = ({
+  userId,
+  fetchUrl,
+}) => {
   const [invoices, setInvoices] = useState([]);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   useEffect(() => {
     const fetchInvoices = async () => {
       const res = await fetch(
-        `/api/invoices?userId=${userId}&sortOrder=${sortOrder}`
+        `${fetchUrl}?userId=${userId}&sortOrder=${sortOrder}`
       );
       const data = await res.json();
       setInvoices(data);
     };
 
     fetchInvoices();
-  }, [userId, sortOrder]);
+  }, [userId, sortOrder, fetchUrl]);
 
   return (
     <div className="w-full">
@@ -42,6 +45,7 @@ const InvoiceList: React.FC<{ userId: number }> = ({ userId }) => {
               invoiceTitle={invoice.companyName}
               invoiceTotalValue={invoice.totalValue}
               invoiceStatus={invoice.status}
+              invoiceCreatedAt={invoice.createdAt}
             />
           </li>
         ))}

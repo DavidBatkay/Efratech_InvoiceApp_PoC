@@ -10,7 +10,7 @@ const InvoicePage: React.FC = async () => {
 
   return (
     <div className="flex container mx-auto flex-col min-h-screen justify-center items-center pt-4">
-      <InvoiceList userId={session.user.user_id} />
+      <InvoiceList userId={session.user.user_id} fetchUrl="/api/invoices" />
     </div>
   );
 };
