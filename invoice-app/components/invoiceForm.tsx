@@ -8,14 +8,14 @@ const InvoiceFormComponent: React.FC = () => {
   const [form, setForm] = useState({
     companyName: "",
     totalValue: 0,
-    invoiceNumber: `INV-2024-${Date.now().toString().slice(-6)}-${Math.floor(
-      Math.random() * 1000
-    )}`,
+    invoiceNumber: `INV-${new Date().getFullYear()}-${Date.now()
+      .toString()
+      .slice(-6)}-${Math.floor(Math.random() * 1000)}`,
     dueDate: "",
     status: "PENDING",
     notes: "",
     lineItems: [{ description: "", quantity: 1, unitPrice: 0 }],
-    user: null, // Update this dynamically if needed
+    user: null,
   });
   const [showModal, setShowModal] = useState(false);
 
