@@ -49,7 +49,8 @@ const PaymentsPage = () => {
           onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          Sort by {sortBy} ({sortOrder === "desc" ? "↓" : "↑"})
+          Sort by {sortBy === "updatedAt" ? "Payment Date" : "Total Amount"} (
+          {sortOrder === "desc" ? "↓" : "↑"})
         </button>
         <button
           onClick={() =>
@@ -60,38 +61,73 @@ const PaymentsPage = () => {
           Sort by {sortBy === "updatedAt" ? "Total Amount" : "Payment Date"}
         </button>
       </div>
-      <table className="w-full border-collapse border border-gray-300">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="border p-2">Invoice ID</th>
-            <th className="border p-2">Company</th>
-            <th className="border p-2">Total Amount</th>
-            <th className="border p-2">Payment Date</th>
-            <th className="border p-2">Details</th>
-          </tr>
-        </thead>
-        <tbody className="bg-teal-300 bg-opacity-25">
-          {payments.map((invoice) => (
-            <tr key={invoice.id} className="border">
-              <td className="border p-2">{invoice.id}</td>
-              <td className="border p-2">{invoice.companyName}</td>
-              <td className="border p-2">${invoice.totalValue.toFixed(2)}</td>
-              <td className="border p-2">
-                {new Date(invoice.updatedAt).toLocaleDateString()}
-              </td>
-              <td className="border p-2 items-center justify-center">
-                <button onClick={handleClick}>
-                  <Button
-                    href={`./invoices/${invoice.id}`}
-                    aria_label={`View details for invoice ${invoice.id}`}
-                    label="Go to Invoice"
-                  />
-                </button>
-              </td>
+
+      {/* Responsive Table */}
+      <div className="w-full">
+        <table className="w-full border-collapse border border-gray-300 hidden md:table">
+          <thead>
+            <tr className="bg-gray-200 text-sm md:text-base">
+              <th className="border p-2">Invoice ID</th>
+              <th className="border p-2">Company</th>
+              <th className="border p-2">Total Amount</th>
+              <th className="border p-2">Payment Date</th>
+              <th className="border p-2">Details</th>
             </tr>
+          </thead>
+          <tbody className="bg-amber-100 bg-opacity-40 text-sm md:text-base">
+            {payments.map((invoice) => (
+              <tr key={invoice.id} className="border">
+                <td className="border p-2">{invoice.id}</td>
+                <td className="border p-2">{invoice.companyName}</td>
+                <td className="border p-2">${invoice.totalValue.toFixed(2)}</td>
+                <td className="border p-2">
+                  {new Date(invoice.updatedAt).toLocaleDateString()}
+                </td>
+                <td className="border p-2 text-center">
+                  <button onClick={handleClick} className="w-full md:w-auto">
+                    <Button
+                      href={`./invoices/${invoice.id}`}
+                      aria_label={`View details for invoice ${invoice.id}`}
+                      label="Go to Invoice"
+                    />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Mobile View - Cards Instead of Table */}
+        <div className="md:hidden flex flex-col gap-4">
+          {payments.map((invoice) => (
+            <div
+              key={invoice.id}
+              className="border p-3 bg-amber-100 bg-opacity-40 rounded-md"
+            >
+              <p className="text-sm">
+                <strong>Invoice ID:</strong> {invoice.id}
+              </p>
+              <p className="text-sm">
+                <strong>Company:</strong> {invoice.companyName}
+              </p>
+              <p className="text-sm">
+                <strong>Total Amount:</strong> ${invoice.totalValue.toFixed(2)}
+              </p>
+              <p className="text-sm">
+                <strong>Payment Date:</strong>{" "}
+                {new Date(invoice.updatedAt).toLocaleDateString()}
+              </p>
+              <button onClick={handleClick} className="mt-2 w-full">
+                <Button
+                  href={`./invoices/${invoice.id}`}
+                  aria_label={`View details for invoice ${invoice.id}`}
+                  label="Go to Invoice"
+                />
+              </button>
+            </div>
           ))}
-        </tbody>
-      </table>
+        </div>
+      </div>
     </div>
   );
 };
