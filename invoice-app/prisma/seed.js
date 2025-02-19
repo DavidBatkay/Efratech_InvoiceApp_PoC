@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client";
-import { connect } from "http2";
+import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 const initialUsers = [
   {
     user_id: 1,
     email: "john.doe@example.com",
-    password: "password123", //NOTE without hash only outside of production
+    password: "password123",
   },
   {
     user_id: 2,
@@ -17,7 +17,6 @@ const initialUsers = [
 
 const initialInvoices = [
   {
-    user: initialUsers[1],
     user_id: 1,
     companyName: "Acme Corp",
     totalValue: 5000.0,
@@ -31,7 +30,6 @@ const initialInvoices = [
     ],
   },
   {
-    user: initialUsers[1],
     user_id: 1,
     companyName: "Beta LLC",
     totalValue: 1500.0,
@@ -45,7 +43,6 @@ const initialInvoices = [
     ],
   },
   {
-    user: initialUsers[1],
     user_id: 1,
     companyName: "Gamma Inc.",
     totalValue: 3200.5,
@@ -72,7 +69,7 @@ const initialInvoices = [
     ],
   },
   {
-    user_id: 1,
+    user_id: 2,
     companyName: "Epsilon Group",
     totalValue: 4500.75,
     invoiceNumber: "INV-2024-005",
@@ -93,29 +90,23 @@ const seed = async () => {
 
   // Seed users individually
   for (const user of initialUsers) {
-    await prisma.user.create({ data: user });
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    await prisma.user.create({
+      data: {
+        ...user,
+        password: hashedPassword,
+      },
+    });
   }
 
-  // Get the first user to associate invoices
-  const firstUser = await prisma.user.findFirst();
-
-  if (!firstUser) {
-    console.error("No user found to associate invoices. Exiting.");
-    return; // Exit if no user exists
-  }
-
-  // Seed invoices associated with the first user
+  // Seed invoices
   for (const invoice of initialInvoices) {
+    const { user_id, ...data } = invoice;
     await prisma.invoice.create({
       data: {
-        companyName: invoice.companyName,
-        totalValue: invoice.totalValue,
-        invoiceNumber: invoice.invoiceNumber,
-        dueDate: invoice.dueDate,
-        status: invoice.status,
-        notes: invoice.notes,
+        ...data,
         user: {
-          connect: { user_id: firstUser.user_id }, // Replace `id` with your primary key field name if different
+          connect: { user_id },
         },
         lineItems: {
           create: invoice.lineItems,

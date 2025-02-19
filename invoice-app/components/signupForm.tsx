@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChangeEvent, useState } from "react";
 import { createUser } from "@/dao/user.dao";
 import { useRouter } from "next/navigation";
+import bcrypt from "bcryptjs";
 
 const SignupForm: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -34,7 +35,8 @@ const SignupForm: React.FC = () => {
       console.error("Signup Error: ", error);
     } else {
       try {
-        await createUser({ email: email, password: password });
+        const encryptedPassword = await bcrypt.hash(password, 10);
+        await createUser({ email, password: encryptedPassword });
         //NOTE No error = Successful login
 
         setSuccess(true);

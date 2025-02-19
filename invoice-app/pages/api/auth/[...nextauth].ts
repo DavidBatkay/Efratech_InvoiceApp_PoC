@@ -2,14 +2,13 @@ import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 // Define the type for the user returned from Prisma
 interface PrismaUser {
   user_id: number;
   email: string;
-  username: string | null;
   password: string | null;
-  name: string | null;
 }
 
 export const authOptions: AuthOptions = {
@@ -37,18 +36,27 @@ export const authOptions: AuthOptions = {
           return null;
         }
 
-        if (user.password === credentials.password) {
-          console.log("User authenticated successfully:", user);
-          return {
-            id: user.user_id.toString(), // ✅ Make sure user_id is included
-            email: user.email,
-            name: user.name,
-            user_id: user.user_id, // 🔥 Add this to pass user_id to NextAuth
-          };
-        } else {
-          console.log("Invalid password");
+        if (!user.password) {
+          console.log("User has no password set.");
           return null;
         }
+
+        // Ensure the comparison is done correctly
+        const isValidPassword = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+        if (!isValidPassword) {
+          console.log("Invalid password");
+          return null; // Return null instead of throwing an error
+        }
+
+        console.log("User authenticated successfully:", user);
+        return {
+          id: user.user_id.toString(), // ✅ Ensure user_id is included
+          email: user.email,
+          user_id: user.user_id, // 🔥 Pass user_id to NextAuth
+        };
       },
     }),
   ],
@@ -64,13 +72,11 @@ export const authOptions: AuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      // console.log("Session Callback - Token:", token);
-
       return {
         ...session,
         user: {
           ...session.user,
-          user_id: token.user_id ?? null, // ✅ Make sure to include user_id
+          user_id: token.user_id ?? null, // ✅ Include user_id
         },
       };
     },
