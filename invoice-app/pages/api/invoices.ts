@@ -22,7 +22,6 @@ export default async function handler(
         return res.status(400).json({ error: "Missing required fields" });
       }
 
-      // Create Invoice in the database
       const newInvoice = await prisma.invoice.create({
         data: {
           companyName,
@@ -34,7 +33,7 @@ export default async function handler(
           dueDate: new Date(dueDate),
           status,
           notes: notes || null,
-          user_id: session.user.user_id, // Assign to logged-in user
+          user_id: session.user.user_id,
           lineItems: {
             create: lineItems.map((item: any) => ({
               description: item.description,
@@ -54,10 +53,15 @@ export default async function handler(
 
   if (req.method === "GET") {
     try {
-      const { sortOrder = "desc" } = req.query; // Default to "desc"
+      const { sortOrder = "desc", filter = "all" } = req.query; // Use 'filter' instead of 'status'
+      const whereCondition: any = { user_id: session.user.user_id };
+
+      if (filter !== "all" && typeof filter == "string") {
+        whereCondition.status = filter.toUpperCase(); // Convert filter to uppercase (if not 'all')
+      }
 
       const invoices = await prisma.invoice.findMany({
-        where: { user_id: session.user.user_id },
+        where: whereCondition,
         include: { lineItems: true },
         orderBy: { createdAt: sortOrder === "asc" ? "asc" : "desc" },
       });

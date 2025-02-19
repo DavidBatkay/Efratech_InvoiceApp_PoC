@@ -4,39 +4,58 @@ import { useEffect, useState } from "react";
 import CreateInvoiceButton from "@/components/createInvoice";
 import Invoice from "@/components/invoice";
 
-const InvoiceList: React.FC<{ userId: number; fetchUrl: string }> = ({
-  userId,
-  fetchUrl,
-}) => {
+const InvoiceList: React.FC<{
+  userId: number;
+  fetchUrl: string;
+}> = ({ userId, fetchUrl }) => {
   const [invoices, setInvoices] = useState([]);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [filter, setFilter] = useState<"all" | "pending" | "overdue" | "paid">(
+    "all"
+  );
 
   useEffect(() => {
     const fetchInvoices = async () => {
       const res = await fetch(
-        `${fetchUrl}?userId=${userId}&sortOrder=${sortOrder}`
+        `${fetchUrl}?userId=${userId}&sortOrder=${sortOrder}&filter=${filter}`
       );
       const data = await res.json();
       setInvoices(data);
     };
 
     fetchInvoices();
-  }, [userId, sortOrder, fetchUrl]);
+  }, [userId, sortOrder, fetchUrl, filter]);
 
   return (
     <div className="w-full">
-      <button
-        onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
-        className={`px-4 py-2 rounded font-semibold transition-colors duration-200 ${
-          sortOrder === "desc"
-            ? "bg-blue-500 text-white hover:bg-blue-600"
-            : "bg-gray-300 text-black hover:bg-gray-400"
-        }`}
-      >
-        {sortOrder === "desc" ? "Sort: Newest First ↓" : "Sort: Oldest First ↑"}
-      </button>
+      <div className="flex gap-4 items-center mb-4">
+        <button
+          onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+          className={`px-4 py-2 rounded font-semibold transition-colors duration-200 ${
+            sortOrder === "desc"
+              ? "bg-blue-500 text-white hover:bg-blue-600"
+              : "bg-gray-300 text-black hover:bg-gray-400"
+          }`}
+        >
+          {sortOrder === "desc"
+            ? "Sort: Newest First ↓"
+            : "Sort: Oldest First ↑"}
+        </button>
 
-      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+        <select
+          value={filter}
+          onChange={(e) =>
+            setFilter(e.target.value as "all" | "pending" | "overdue" | "paid")
+          }
+          className="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        >
+          <option value="all">All Invoices</option>
+          <option value="pending">Pending</option>
+          <option value="overdue">Overdue</option>
+          <option value="paid">Paid</option>
+        </select>
+      </div>
+      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 justify-items-center">
         <CreateInvoiceButton />
         {invoices.map((invoice: any) => (
           <li key={invoice.id}>

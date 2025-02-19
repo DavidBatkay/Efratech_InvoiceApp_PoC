@@ -1,4 +1,3 @@
-import { getInvoicesByUser } from "@/dao/invoice.dao";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";

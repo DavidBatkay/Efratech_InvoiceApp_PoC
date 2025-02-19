@@ -11,7 +11,7 @@ const InvoiceIdPage = async ({ params }: { params: { invoiceId: string } }) => {
   return (
     <div className="relative p-4">
       {/* Back Button */}
-      <div className="fixed ml-20 -mt-16 sm:mt-12 sm:ml-20">
+      <div className="fixed top-26 left-4 sm:top-36 sm:left-32 z-50 rounded-full shadow-emerald-100 shadow-2xl">
         <Link href="/dashboard/invoices">
           <Image
             className="bg-slate-200 rounded-full p-1"
