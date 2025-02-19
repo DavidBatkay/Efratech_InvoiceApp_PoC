@@ -16,6 +16,9 @@ const Invoice: React.FC<InvoiceProps> = ({
   invoiceStatus,
   invoiceCreatedAt,
 }) => {
+  const handleClick = () => {
+    sessionStorage.setItem("previousPage", "invoices");
+  };
   // Determine status color based on invoice status
   const statusColor =
     invoiceStatus === "PAID"
@@ -41,12 +44,13 @@ const Invoice: React.FC<InvoiceProps> = ({
         <span className={`font-medium ${statusColor}`}>{invoiceStatus}</span>
         <span className="text-black font-semibold">{invoiceTotalValue} $</span>
       </div>
-
-      <Button
-        href={`./invoices/${invoiceId}`}
-        aria_label={`View details for invoice ${invoiceId}`}
-        label="Details"
-      />
+      <button onClick={handleClick}>
+        <Button
+          href={`./invoices/${invoiceId}`}
+          aria_label={`View details for invoice ${invoiceId}`}
+          label="Details"
+        />
+      </button>
     </div>
   );
 };

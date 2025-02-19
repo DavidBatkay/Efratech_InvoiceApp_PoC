@@ -3,7 +3,6 @@
 import Item from "@/components/item";
 import { usePathname } from "next/navigation";
 
-
 const DashBoard: React.FC = () => {
   const path = usePathname();
 
@@ -23,7 +22,7 @@ const DashBoard: React.FC = () => {
             </Item>
             <Item
               href={`${path}/payments`}
-              description="Check your pending payments"
+              description="Check your confirmed payments"
             >
               Payments
             </Item>

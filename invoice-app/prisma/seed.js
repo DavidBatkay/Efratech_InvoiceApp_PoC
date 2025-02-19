@@ -61,11 +61,25 @@ const initialInvoices = [
     totalValue: 980.0,
     invoiceNumber: "INV-2024-004",
     dueDate: new Date("2024-11-20"),
-    status: "PENDING",
+    status: "PAID",
     notes: "Discount applied",
+    updatedAt: new Date("2024-11-20"),
     lineItems: [
       { description: "Consultation Services", quantity: 2, unitPrice: 400 },
       { description: "Follow-up Support", quantity: 1, unitPrice: 180 },
+    ],
+  },
+  {
+    user_id: 1,
+    companyName: "Delta Co.",
+    totalValue: 280.0,
+    invoiceNumber: "INV-2024-023",
+    dueDate: new Date("2025-01-30"),
+    status: "PAID",
+    notes: "Follow up maintenance",
+    updatedAt: new Date("2024-12-10"),
+    lineItems: [
+      { description: "Follow-up Support", quantity: 1, unitPrice: 280 },
     ],
   },
   {
@@ -85,8 +99,8 @@ const initialInvoices = [
 
 const seed = async () => {
   // Clean up existing data (optional)
-  await prisma.invoice.deleteMany();
-  await prisma.user.deleteMany(); // Clear users before seeding
+  // await prisma.invoice.deleteMany();
+  // await prisma.user.deleteMany(); // Clear users before seeding
 
   // Seed users individually
   for (const user of initialUsers) {
