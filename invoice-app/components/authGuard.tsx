@@ -18,7 +18,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
       router.push("/login"); // Redirect to login page if user is not authenticated
     }
   }, [status, router]);
-
+  if (status === "unauthenticated") return null;
   if (status === "loading") {
     return <Spinner />; //NOTE You can customize the loading state
   }
