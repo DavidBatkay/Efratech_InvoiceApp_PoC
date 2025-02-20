@@ -17,15 +17,15 @@ model Invoice {
   totalValue     Float
   invoiceNumber  String    @unique
   dueDate        DateTime
-  status         String    // NOTE Store status as a String (e.g., "PENDING", "PAID", "OVERDUE" etc.)
+  status         String
   lineItems      LineItem[]
   notes          String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
-  
- // Foreign key to User model
-  user_id        Int       // This links to the User table via user_id
-  user           User      @relation(fields: [user_id], references: [user_id]) // Relation field referencing User
+
+  // Foreign key to User model
+  user_id        Int
+  user           User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
 
 model LineItem {
@@ -34,8 +34,9 @@ model LineItem {
   quantity    Int
   unitPrice   Float
   invoiceId   Int
-  invoice     Invoice @relation(fields: [invoiceId], references: [id])
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade) // ✅ Add Cascade Delete here
 }
+
 
 model User {
   user_id   Int       @id @default(autoincrement())

@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import Button from "@/components/button";
+import Button from "@/components/buttons/button";
 interface Invoice {
   id: number;
   companyName: string;

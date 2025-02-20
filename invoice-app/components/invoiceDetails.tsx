@@ -1,5 +1,8 @@
 import React from "react";
-import BackButton from "./backButton";
+import BackButton from "./buttons/backButton";
+import EditButton from "./buttons/editButton";
+import Button from "./buttons/button";
+import DeleteInvoiceButton from "./buttons/deleteButton";
 type LineItem = {
   id: number;
   description: string;
@@ -30,7 +33,13 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
   return (
     <>
       <BackButton />
+
+      {/* <DeleteButton /> */}
       <div className="flex flex-col min-h-screen justify-center items-center bg-inherit py-10">
+        <div className="flex justify-between w-full max-w-3xl py-3">
+          <EditButton invoiceId={invoice.id} />
+          <DeleteInvoiceButton invoiceId={invoice.id} />
+        </div>
         <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-3xl">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">Invoice</h1>
 

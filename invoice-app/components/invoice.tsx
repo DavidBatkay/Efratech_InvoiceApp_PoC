@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Button from "./button";
+import Button from "./buttons/button";
 
 interface InvoiceProps {
   invoiceId: string;
