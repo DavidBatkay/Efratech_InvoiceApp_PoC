@@ -14,8 +14,7 @@ const InvoiceFormComponent: React.FC = () => {
     dueDate: "",
     status: "PENDING",
     notes: "",
-    lineItems: [{ description: "", quantity: 1, unitPrice: 0 }],
-    user: null,
+    lineItems: [{ description: "", quantity: "", unitPrice: "" }],
   });
   const [showModal, setShowModal] = useState(false);
 
@@ -25,12 +24,7 @@ const InvoiceFormComponent: React.FC = () => {
     const { name, value } = e.target;
     setForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
-
-  const handleLineItemChange = (
-    index: number,
-    name: string,
-    value: string | number
-  ) => {
+  const handleLineItemChange = (index: number, name: string, value: string) => {
     const updatedLineItems = [...form.lineItems];
     updatedLineItems[index] = { ...updatedLineItems[index], [name]: value };
     setForm((prevForm) => ({ ...prevForm, lineItems: updatedLineItems }));
@@ -41,20 +35,46 @@ const InvoiceFormComponent: React.FC = () => {
       ...prevForm,
       lineItems: [
         ...prevForm.lineItems,
-        { description: "", quantity: 1, unitPrice: 0 },
+        { description: "", quantity: "", unitPrice: "" },
       ],
     }));
   };
 
+  const removeLineItem = (index: number) => {
+    if (form.lineItems.length > 1) {
+      setForm((prevForm) => ({
+        ...prevForm,
+        lineItems: prevForm.lineItems.filter((_, i) => i !== index),
+      }));
+    }
+  };
+
   const calculateTotalValue = () => {
     return form.lineItems.reduce(
-      (acc, item) => acc + item.quantity * item.unitPrice,
+      (acc, item) =>
+        acc + (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0),
       0
     );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Ensure there is at least one valid line item
+    if (
+      !form.lineItems.length ||
+      form.lineItems.some(
+        (item) =>
+          !item.description.trim() ||
+          !item.quantity ||
+          Number(item.quantity) <= 0 ||
+          !item.unitPrice ||
+          Number(item.unitPrice) < 0
+      )
+    ) {
+      alert("Each service must have a description, valid quantity, and price.");
+      return;
+    }
 
     try {
       const invoiceData = {
@@ -64,7 +84,11 @@ const InvoiceFormComponent: React.FC = () => {
         dueDate: form.dueDate,
         status: new Date(form.dueDate) < new Date() ? "OVERDUE" : "PENDING",
         notes: form.notes || null,
-        lineItems: form.lineItems,
+        lineItems: form.lineItems.map((item) => ({
+          ...item,
+          quantity: Number(item.quantity),
+          unitPrice: Number(item.unitPrice),
+        })),
       };
 
       const response = await fetch("/api/invoices", {
@@ -75,11 +99,11 @@ const InvoiceFormComponent: React.FC = () => {
 
       if (!response.ok) throw new Error("Failed to create invoice");
 
-      setShowModal(true); // Show modal
+      setShowModal(true);
 
       setTimeout(() => {
         setShowModal(false);
-        router.push("/dashboard/invoices"); // Redirect after modal disappears
+        router.push("/dashboard/invoices");
       }, 2000);
     } catch (error) {
       console.error("Error creating invoice:", error);
@@ -138,42 +162,65 @@ const InvoiceFormComponent: React.FC = () => {
             />
           </div>
 
-          {/* Line Items */}
+          {/* Services Section */}
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-gray-700 mb-2">
-              Line Items
+              Services
             </h2>
             {form.lineItems.map((item, index) => (
-              <div key={index} className="flex space-x-4 mb-2">
+              <div
+                key={index}
+                className={`grid gap-4 mb-2 items-center ${
+                  form.lineItems.length > 1
+                    ? "grid-cols-[auto_1fr_1fr_1fr]"
+                    : "grid-cols-[1fr_1fr_1fr]"
+                }`}
+              >
+                {/* Remove Button */}
+                {form.lineItems.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeLineItem(index)}
+                    className="text-red-500 text-lg"
+                  >
+                    ×
+                  </button>
+                )}
+                {/* Description */}
                 <input
                   type="text"
-                  placeholder="Description"
+                  placeholder="Service Description"
                   value={item.description}
                   onChange={(e) =>
                     handleLineItemChange(index, "description", e.target.value)
                   }
                   className="w-full border rounded-lg px-4 py-2"
+                  required
                 />
+                {/* Quantity */}
                 <input
                   type="number"
-                  placeholder="Quantity"
+                  placeholder="Qty"
                   value={item.quantity}
                   onChange={(e) =>
-                    handleLineItemChange(index, "quantity", +e.target.value)
+                    handleLineItemChange(index, "quantity", e.target.value)
                   }
-                  className="w-1/3 border rounded-lg px-4 py-2"
+                  className="w-full border rounded-lg px-4 py-2"
                   min="1"
+                  required
                 />
+                {/* Unit Price */}
                 <input
                   type="number"
                   placeholder="Unit Price"
                   value={item.unitPrice}
                   onChange={(e) =>
-                    handleLineItemChange(index, "unitPrice", +e.target.value)
+                    handleLineItemChange(index, "unitPrice", e.target.value)
                   }
-                  className="w-1/3 border rounded-lg px-4 py-2"
+                  className="w-full border rounded-lg px-4 py-2"
                   step="0.01"
                   min="0"
+                  required
                 />
               </div>
             ))}
@@ -182,7 +229,7 @@ const InvoiceFormComponent: React.FC = () => {
               onClick={addLineItem}
               className="text-blue-500 hover:underline text-sm"
             >
-              + Add Line Item
+              + Add Service
             </button>
           </div>
 

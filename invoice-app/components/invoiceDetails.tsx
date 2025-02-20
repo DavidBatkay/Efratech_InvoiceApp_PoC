@@ -1,7 +1,6 @@
 import React from "react";
 import BackButton from "./buttons/backButton";
 import EditButton from "./buttons/editButton";
-import Button from "./buttons/button";
 import DeleteInvoiceButton from "./buttons/deleteButton";
 type LineItem = {
   id: number;
