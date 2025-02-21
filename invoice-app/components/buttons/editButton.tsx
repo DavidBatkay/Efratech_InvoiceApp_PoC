@@ -1,13 +1,24 @@
 import Button from "./button";
-const EditButton: React.FC<{ invoiceId: number }> = ({ invoiceId }) => {
+const EditButton: React.FC<{ invoiceId: number; invoiceStatus: string }> = ({
+  invoiceId,
+  invoiceStatus,
+}) => {
+  let fromColor = "from-amber-400";
+  let toColor = "to-amber-600";
+  const paid = invoiceStatus === "PAID";
+  if (paid) {
+    fromColor = "from-gray-400 cursor-not-allowed";
+    toColor = "to-gray-600";
+  }
   return (
     <>
       <Button
         href={`/dashboard/invoices/${invoiceId}/edit`}
+        disabled={paid}
         aria_label="Edit invoice"
         label="Edit"
-        fromColor="from-amber-400"
-        toColor="to-amber-600"
+        fromColor={fromColor}
+        toColor={toColor}
       />
     </>
   );

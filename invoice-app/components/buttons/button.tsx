@@ -6,16 +6,18 @@ const Button: React.FC<{
   label: string;
   fromColor?: string;
   toColor?: string;
+  disabled?: boolean;
 }> = ({
   href,
   aria_label,
   label,
   fromColor = "from-blue-400",
   toColor = "to-blue-600",
+  disabled = false,
 }) => {
   return (
     <Link
-      href={href}
+      href={!disabled ? href : ""}
       aria-label={aria_label}
       className={`bg-gradient-to-br ${fromColor} ${toColor} hover:opacity-85 text-white font-bold py-2 px-4 rounded-md mt-4 flex items-center justify-center`}
     >

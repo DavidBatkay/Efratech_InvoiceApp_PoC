@@ -36,7 +36,7 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
       {/* <DeleteButton /> */}
       <div className="flex flex-col min-h-screen justify-center items-center bg-inherit py-10">
         <div className="flex justify-between w-full max-w-3xl py-3">
-          <EditButton invoiceId={invoice.id} />
+          <EditButton invoiceId={invoice.id} invoiceStatus={invoice.status} />
           <DeleteInvoiceButton invoiceId={invoice.id} />
         </div>
         <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-3xl">

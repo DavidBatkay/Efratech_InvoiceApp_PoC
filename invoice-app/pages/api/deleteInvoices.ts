@@ -12,6 +12,18 @@ export default async function handler(
   try {
     const { invoiceId } = req.body;
 
+    const existingInvoice = await prisma.invoice.findUnique({
+      where: { id: Number(invoiceId) },
+    });
+
+    if (!existingInvoice) {
+      return res.status(404).json({ error: "Invoice not found" });
+    }
+
+    if (existingInvoice.status === "PAID") {
+      return res.status(403).json({ error: "Paid invoices cannot be deleted" });
+    }
+
     if (!invoiceId) {
       return res.status(400).json({ error: "Invoice ID is required" });
     }

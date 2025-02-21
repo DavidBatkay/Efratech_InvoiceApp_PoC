@@ -18,7 +18,8 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
   const router = useRouter();
   const [form, setForm] = useState(invoice);
   const [showModal, setShowModal] = useState(false);
-
+  const [confirmUpdate, setConfirmUpdate] = useState(false);
+  const isPaid = invoice.status === "PAID";
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -37,13 +38,23 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
   };
 
   const addLineItem = () => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      lineItems: [
-        ...prevForm.lineItems,
-        { description: "", quantity: 1, unitPrice: 0 },
-      ],
-    }));
+    if (!isPaid)
+      setForm((prevForm) => ({
+        ...prevForm,
+        lineItems: [
+          ...prevForm.lineItems,
+          { description: "", quantity: 1, unitPrice: 0 },
+        ],
+      }));
+  };
+
+  const removeLineItem = (index: number) => {
+    if (form.lineItems.length > 1 && !isPaid) {
+      setForm((prevForm) => ({
+        ...prevForm,
+        lineItems: prevForm.lineItems.filter((_, i) => i !== index),
+      }));
+    }
   };
 
   const calculateTotalValue = () => {
@@ -55,16 +66,24 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setConfirmUpdate(true);
+  };
 
+  const confirmSubmit = async () => {
     try {
+      if (isPaid) throw new Error("Paid invoices cannot be edited");
       const updatedInvoice = {
         companyName: form.companyName,
         totalValue: calculateTotalValue(),
         invoiceNumber: form.invoiceNumber,
-        dueDate: form.dueDate,
+        dueDate: new Date(form.dueDate).toISOString(), // Ensure it's a valid date
         status: new Date(form.dueDate) < new Date() ? "OVERDUE" : "PENDING",
         notes: form.notes || null,
-        lineItems: form.lineItems,
+        lineItems: form.lineItems.map((item) => ({
+          description: item.description,
+          quantity: Number(item.quantity), // Ensure numbers are sent
+          unitPrice: Number(item.unitPrice),
+        })),
       };
 
       const response = await fetch(`/api/invoices/${invoice.id}`, {
@@ -76,7 +95,6 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
       if (!response.ok) throw new Error("Failed to update invoice");
 
       setShowModal(true);
-
       setTimeout(() => {
         setShowModal(false);
         router.push(`/dashboard/invoices/${invoice.id}`);
@@ -85,6 +103,7 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
       console.error("Error updating invoice:", error);
     }
   };
+
   const formattedDueDate = form.dueDate
     ? new Date(form.dueDate).toISOString().split("T")[0]
     : "";
@@ -102,6 +121,7 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
               Company Name
             </label>
             <input
+              disabled={isPaid}
               type="text"
               name="companyName"
               value={form.companyName}
@@ -116,6 +136,7 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
               Due Date
             </label>
             <input
+              disabled={isPaid}
               type="date"
               name="dueDate"
               value={formattedDueDate}
@@ -130,6 +151,7 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
               Notes
             </label>
             <textarea
+              disabled={isPaid}
               name="notes"
               value={form.notes || ""}
               onChange={handleInputChange}
@@ -140,51 +162,71 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
 
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-gray-700 mb-2">
-              Line Items
+              Services
             </h2>
             {form.lineItems.map((item, index) => (
-              <div key={index} className="flex space-x-4 mb-2">
+              <div key={index} className="flex space-x-4 mb-2 items-center">
+                {form.lineItems.length > 1 && (
+                  <button
+                    hidden={isPaid}
+                    type="button"
+                    onClick={() => removeLineItem(index)}
+                    className="text-red-500 text-lg"
+                  >
+                    ×
+                  </button>
+                )}
+                {/* Description */}
                 <input
+                  disabled={isPaid}
                   type="text"
-                  placeholder="Description"
+                  placeholder="Service Description"
                   value={item.description}
                   onChange={(e) =>
                     handleLineItemChange(index, "description", e.target.value)
                   }
                   className="w-full border rounded-lg px-4 py-2"
+                  required
                 />
+                {/* Quantity */}
                 <input
+                  disabled={isPaid}
                   type="number"
-                  placeholder="Quantity"
+                  placeholder="Qty"
                   value={item.quantity}
                   onChange={(e) =>
-                    handleLineItemChange(index, "quantity", +e.target.value)
+                    handleLineItemChange(index, "quantity", e.target.value)
                   }
-                  className="w-1/3 border rounded-lg px-4 py-2"
+                  className="w-full border rounded-lg px-4 py-2"
                   min="1"
+                  required
                 />
+                {/* Unit Price */}
                 <input
+                  disabled={isPaid}
                   type="number"
                   placeholder="Unit Price"
                   value={item.unitPrice}
                   onChange={(e) =>
-                    handleLineItemChange(index, "unitPrice", +e.target.value)
+                    handleLineItemChange(index, "unitPrice", e.target.value)
                   }
-                  className="w-1/3 border rounded-lg px-4 py-2"
+                  className="w-full border rounded-lg px-4 py-2"
                   step="0.01"
                   min="0"
+                  required
                 />
               </div>
             ))}
             <button
+              disabled={isPaid}
               type="button"
               onClick={addLineItem}
               className="text-blue-500 hover:underline text-sm"
             >
-              + Add Line Item
+              + Add Service
             </button>
           </div>
-
+          {/* Display Total Value */}
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-1">
               Total Value
@@ -196,6 +238,7 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
 
           <div className="mt-6 flex gap-4">
             <button
+              disabled={isPaid}
               type="submit"
               className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg"
             >
@@ -212,13 +255,31 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
         </form>
       </div>
 
-      {showModal && (
+      {confirmUpdate && !isPaid && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-xl font-semibold text-green-600">
-              Invoice Updated!
+            <h2 className="text-xl font-semibold text-gray-800">
+              Confirm Update
             </h2>
-            <p className="text-gray-700">You will be redirected shortly...</p>
+            <p className="text-gray-700">
+              Are you sure you want to update this invoice?
+            </p>
+            <div className="mt-4 flex justify-center gap-4">
+              <button
+                disabled={isPaid}
+                onClick={confirmSubmit}
+                className="bg-green-500 text-white py-2 px-4 rounded-lg"
+              >
+                Confirm
+              </button>
+              <button
+                disabled={isPaid}
+                onClick={() => setConfirmUpdate(false)}
+                className="bg-gray-400 text-white py-2 px-4 rounded-lg"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
