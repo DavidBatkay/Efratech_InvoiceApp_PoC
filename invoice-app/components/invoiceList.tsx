@@ -10,9 +10,9 @@ const InvoiceList: React.FC<{
 }> = ({ userId, fetchUrl }) => {
   const [invoices, setInvoices] = useState([]);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [filter, setFilter] = useState<"all" | "pending" | "overdue" | "paid">(
-    "all"
-  );
+  const [filter, setFilter] = useState<
+    "all" | "pending" | "overdue" | "paid" | "archived"
+  >("all");
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -45,7 +45,14 @@ const InvoiceList: React.FC<{
         <select
           value={filter}
           onChange={(e) =>
-            setFilter(e.target.value as "all" | "pending" | "overdue" | "paid")
+            setFilter(
+              e.target.value as
+                | "all"
+                | "pending"
+                | "overdue"
+                | "paid"
+                | "archived"
+            )
           }
           className="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none"
         >
@@ -53,6 +60,7 @@ const InvoiceList: React.FC<{
           <option value="pending">Pending</option>
           <option value="overdue">Overdue</option>
           <option value="paid">Paid</option>
+          <option value="archived">Archived</option>
         </select>
       </div>
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 justify-items-center">

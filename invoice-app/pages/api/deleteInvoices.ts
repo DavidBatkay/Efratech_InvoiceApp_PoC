@@ -12,8 +12,13 @@ export default async function handler(
   try {
     const { invoiceId } = req.body;
 
+    if (!invoiceId) {
+      return res.status(400).json({ error: "Invoice ID is required" });
+    }
+
     const existingInvoice = await prisma.invoice.findUnique({
       where: { id: Number(invoiceId) },
+      select: { status: true, updatedAt: true }, // Select updatedAt for preserving payment date
     });
 
     if (!existingInvoice) {
@@ -21,15 +26,28 @@ export default async function handler(
     }
 
     if (existingInvoice.status === "PAID") {
-      return res.status(403).json({ error: "Paid invoices cannot be deleted" });
+      // Archive instead of deleting
+      await prisma.invoice.update({
+        where: { id: Number(invoiceId) },
+        data: { status: "ARCHIVED", updatedAt: existingInvoice.updatedAt },
+      });
+      return res.status(200).json({ message: "Invoice archived successfully" });
     }
 
-    if (!invoiceId) {
-      return res.status(400).json({ error: "Invoice ID is required" });
+    if (existingInvoice.status === "ARCHIVED") {
+      // Unarchive (back to PAID), keeping the same updatedAt
+      await prisma.invoice.update({
+        where: { id: Number(invoiceId) },
+        data: { status: "PAID", updatedAt: existingInvoice.updatedAt },
+      });
+      return res
+        .status(200)
+        .json({ message: "Invoice unarchived successfully" });
     }
 
+    // If not PAID or ARCHIVED, delete normally
     await prisma.invoice.delete({
-      where: { id: invoiceId },
+      where: { id: Number(invoiceId) },
     });
 
     return res.status(200).json({ message: "Invoice deleted successfully" });

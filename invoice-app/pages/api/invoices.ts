@@ -53,11 +53,15 @@ export default async function handler(
 
   if (req.method === "GET") {
     try {
-      const { sortOrder = "desc", filter = "all" } = req.query; // Use 'filter' instead of 'status'
+      const { sortOrder = "desc", filter = "all" } = req.query;
       const whereCondition: any = { user_id: session.user.user_id };
 
-      if (filter !== "all" && typeof filter == "string") {
-        whereCondition.status = filter.toUpperCase(); // Convert filter to uppercase (if not 'all')
+      if (filter === "all") {
+        whereCondition.status = { not: "ARCHIVED" }; // Exclude archived invoices
+      } else if (filter === "archived") {
+        whereCondition.status = "ARCHIVED"; // Only show archived invoices
+      } else if (typeof filter === "string") {
+        whereCondition.status = filter.toUpperCase(); // Show invoices with selected status
       }
 
       const invoices = await prisma.invoice.findMany({
