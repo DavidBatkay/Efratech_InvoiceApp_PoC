@@ -54,7 +54,7 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
                 {invoice.invoiceNumber}
               </div>
               <div className="text-lg text-gray-600">
-                <p className="font-semibold">Status:</p>
+                <p className="font-semibold text-right">Status:</p>
                 <span
                   className={`px-2 py-1 rounded-full ${
                     invoice.status === "PAID"

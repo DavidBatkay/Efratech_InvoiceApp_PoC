@@ -23,7 +23,8 @@ const DeleteInvoiceButton: React.FC<{
 
       // Close modal and redirect
       setShowModal(false);
-      router.push("/dashboard/invoices");
+      if (!(paid || archived)) router.push("/dashboard/invoices");
+      else window.location.reload();
     } catch (error) {
       console.error("Error deleting invoice:", error);
     }
