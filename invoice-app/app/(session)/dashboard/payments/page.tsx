@@ -125,6 +125,13 @@ const PaymentsPage = () => {
                 <strong>Payment Date:</strong>{" "}
                 {new Date(payment.createdAt).toLocaleDateString()}
               </p>
+              <button onClick={handleClick} className="mt-2 w-full">
+                <Button
+                  href={`./invoices/${payment.invoiceId}`}
+                  aria_label={`View details for invoice ${payment.invoiceId}`}
+                  label="Go to Invoice"
+                />
+              </button>
             </div>
           ))}
         </div>
