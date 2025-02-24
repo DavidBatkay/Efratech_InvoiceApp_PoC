@@ -7,7 +7,10 @@ const CreateInvoiceButton: React.FC = () => {
         New Invoice
       </div>
       <div className="align-center text-center text-lg p-5">
-        <strong>Create a new invoice</strong>
+        <strong>
+          Create <br /> a new <br />
+          invoice
+        </strong>
       </div>
 
       <div className="">

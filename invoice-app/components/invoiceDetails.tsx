@@ -2,6 +2,7 @@ import React from "react";
 import BackButton from "./buttons/backButton";
 import EditButton from "./buttons/editButton";
 import DeleteInvoiceButton from "./buttons/deleteButton";
+import MarkAsPaidButton from "./buttons/markAsPaidButton";
 type LineItem = {
   id: number;
   description: string;
@@ -37,7 +38,10 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
       <div className="flex flex-col min-h-screen justify-center items-center bg-inherit py-10">
         <div className="flex justify-between w-full max-w-3xl py-3">
           <EditButton invoiceId={invoice.id} invoiceStatus={invoice.status} />
-          <DeleteInvoiceButton invoiceId={invoice.id} />
+          <DeleteInvoiceButton
+            invoiceId={invoice.id}
+            invoiceStatus={invoice.status}
+          />
         </div>
         <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-3xl">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">Invoice</h1>
@@ -57,10 +61,14 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
                       ? "bg-green-100 text-green-600"
                       : invoice.status === "PENDING"
                       ? "bg-yellow-100 text-yellow-600"
+                      : invoice.status === "ARCHIVED"
+                      ? "bg-blue-100 text-blue-600"
                       : "bg-red-100 text-red-600"
                   }`}
                 >
-                  {invoice.status}
+                  {invoice.status === "ARCHIVED"
+                    ? "PAID & ARCHIVED"
+                    : invoice.status}
                 </span>
               </div>
             </div>
@@ -128,6 +136,12 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
             </div>
           </div>
         </div>
+      </div>
+      <div className="flex justify-center items-center justify-items-center">
+        <MarkAsPaidButton
+          invoiceId={invoice.id}
+          invoiceStatus={invoice.status}
+        />
       </div>
     </>
   );

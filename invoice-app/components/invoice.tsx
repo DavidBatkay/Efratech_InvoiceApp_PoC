@@ -25,6 +25,8 @@ const Invoice: React.FC<InvoiceProps> = ({
       ? "text-green-600"
       : invoiceStatus === "PENDING"
       ? "text-yellow-600"
+      : invoiceStatus === "ARCHIVED"
+      ? "text-blue-600"
       : "text-red-600";
 
   return (

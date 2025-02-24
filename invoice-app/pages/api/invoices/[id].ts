@@ -22,10 +22,13 @@ export default async function handler(
         return res.status(404).json({ error: "Invoice not found" });
       }
 
-      if (existingInvoice.status === "PAID") {
+      if (
+        existingInvoice.status === "PAID" ||
+        existingInvoice.status === "ARCHIVED"
+      ) {
         return res
           .status(403)
-          .json({ error: "Paid invoices cannot be edited" });
+          .json({ error: "Paid or Archived invoices cannot be edited" });
       }
 
       const { companyName, dueDate, status, notes, lineItems, invoiceNumber } =
