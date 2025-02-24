@@ -33,14 +33,25 @@ export default async function handler(
       });
     }
 
-    await prisma.invoice.update({
+    // Update invoice status to PAID
+    const updatedInvoice = await prisma.invoice.update({
       where: { id: Number(invoiceId) },
       data: { status: "PAID" },
     });
 
-    return res
-      .status(200)
-      .json({ message: "Invoice marked as paid successfully" });
+    // Create Payment record
+    await prisma.payment.create({
+      data: {
+        invoiceId: updatedInvoice.id,
+        amount: updatedInvoice.totalValue,
+        company: updatedInvoice.companyName, // Using company from invoice
+        user_id: updatedInvoice.user_id,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Invoice marked as paid and payment recorded successfully",
+    });
   } catch (error) {
     console.error("Error updating invoice status:", error);
     return res.status(500).json({ error: "Internal Server Error" });

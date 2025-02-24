@@ -11,21 +11,25 @@ datasource db {
 }
 
 model Invoice {
-  id             Int       @id @default(autoincrement())
+  id             Int        @id @default(autoincrement())
   companyName    String
-  dateOfCreation DateTime  @default(now())
+  dateOfCreation DateTime   @default(now())
   totalValue     Float
-  invoiceNumber  String    @unique
+  invoiceNumber  String     @unique
   dueDate        DateTime
   status         String
   lineItems      LineItem[]
   notes          String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
   // Foreign key to User model
-  user_id        Int
-  user           User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id Int
+  user    User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  // Foreign key to Payment model
+  payment   Payment? @relation(fields: [paymentId], references: [id])
+  paymentId Int?
 }
 
 model LineItem {
@@ -37,12 +41,23 @@ model LineItem {
   invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade) // ✅ Add Cascade Delete here
 }
 
+model Payment {
+  id        Int       @id @default(autoincrement())
+  invoiceId Int       @unique
+  company   String // Will eventually be replaced with customerId
+  amount    Float
+  createdAt DateTime  @default(now()) // Tracks when the payment was made
+  Invoice   Invoice[]
+  user_id   Int
+  user      User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+}
 
 model User {
-  user_id   Int       @id @default(autoincrement())
-  email     String    @unique
-  password  String?
-  invoices  Invoice[]
+  user_id  Int       @id @default(autoincrement())
+  email    String    @unique
+  password String?
+  invoices Invoice[]
+  Payment  Payment[]
 
   @@map("users") // Optional: maps to "users" table in the database
 }

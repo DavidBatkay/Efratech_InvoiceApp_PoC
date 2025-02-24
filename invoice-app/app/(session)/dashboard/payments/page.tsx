@@ -3,11 +3,13 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Button from "@/components/buttons/button";
-interface Invoice {
+
+interface Payment {
   id: number;
-  companyName: string;
-  totalValue: number;
-  updatedAt: string;
+  company: string;
+  amount: number;
+  createdAt: string;
+  invoiceId: number;
 }
 
 const PaymentsPage = () => {
@@ -15,8 +17,8 @@ const PaymentsPage = () => {
   const session = useSession();
   const userId = session.data?.user.user_id;
 
-  const [payments, setPayments] = useState<Invoice[]>([]);
-  const [sortBy, setSortBy] = useState<"updatedAt" | "totalValue">("updatedAt");
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [sortBy, setSortBy] = useState<"createdAt" | "amount">("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const handleClick = () => {
@@ -25,14 +27,18 @@ const PaymentsPage = () => {
 
   useEffect(() => {
     const fetchPayments = async () => {
+      if (!userId) return;
+
       const res = await fetch(
         `${fetchUrl}?userId=${userId}&sortBy=${sortBy}&sortOrder=${sortOrder}`
       );
-      const text = await res.text(); // Get raw response
+      const text = await res.text();
       console.log("Raw API Response:", text);
 
       try {
         const data = JSON.parse(text);
+
+        console.log("Parsed API Data:", data);
         setPayments(data);
       } catch (error) {
         console.error("Error parsing JSON:", error);
@@ -40,7 +46,9 @@ const PaymentsPage = () => {
     };
 
     fetchPayments();
-  }, [sortBy, sortOrder]);
+  }, [userId, sortBy, sortOrder]);
+
+  console.log(payments);
 
   return (
     <div className="w-full p-4">
@@ -49,16 +57,16 @@ const PaymentsPage = () => {
           onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          Sort by {sortBy === "updatedAt" ? "Payment Date" : "Total Amount"} (
+          Sort by {sortBy === "createdAt" ? "Payment Date" : "Total Amount"} (
           {sortOrder === "desc" ? "↓" : "↑"})
         </button>
         <button
           onClick={() =>
-            setSortBy(sortBy === "updatedAt" ? "totalValue" : "updatedAt")
+            setSortBy(sortBy === "createdAt" ? "amount" : "createdAt")
           }
           className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
         >
-          Sort by {sortBy === "updatedAt" ? "Total Amount" : "Payment Date"}
+          Sort by {sortBy === "createdAt" ? "Total Amount" : "Payment Date"}
         </button>
       </div>
 
@@ -67,7 +75,7 @@ const PaymentsPage = () => {
         <table className="w-full border-collapse border border-gray-300 hidden md:table">
           <thead>
             <tr className="bg-gray-200 text-sm md:text-base">
-              <th className="border p-2">Invoice ID</th>
+              <th className="border p-2">Payment ID</th>
               <th className="border p-2">Company</th>
               <th className="border p-2">Total Amount</th>
               <th className="border p-2">Payment Date</th>
@@ -75,19 +83,19 @@ const PaymentsPage = () => {
             </tr>
           </thead>
           <tbody className="bg-amber-100 bg-opacity-40 text-sm md:text-base">
-            {payments.map((invoice) => (
-              <tr key={invoice.id} className="border">
-                <td className="border p-2">{invoice.id}</td>
-                <td className="border p-2">{invoice.companyName}</td>
-                <td className="border p-2">${invoice.totalValue.toFixed(2)}</td>
+            {payments.map((payment) => (
+              <tr key={payment.id} className="border">
+                <td className="border p-2">{payment.id}</td>
+                <td className="border p-2">{payment.company}</td>
+                <td className="border p-2">${payment.amount.toFixed(2)}</td>
                 <td className="border p-2">
-                  {new Date(invoice.updatedAt).toLocaleDateString()}
+                  {new Date(payment.createdAt).toLocaleDateString()}
                 </td>
                 <td className="border p-2 text-center">
                   <button onClick={handleClick} className="w-full md:w-auto">
                     <Button
-                      href={`./invoices/${invoice.id}`}
-                      aria_label={`View details for invoice ${invoice.id}`}
+                      href={`./invoices/${payment.invoiceId}`}
+                      aria_label={`View details for invoice ${payment.invoiceId}`}
                       label="Go to Invoice"
                     />
                   </button>
@@ -99,31 +107,24 @@ const PaymentsPage = () => {
 
         {/* Mobile View - Cards Instead of Table */}
         <div className="md:hidden flex flex-col gap-4">
-          {payments.map((invoice) => (
+          {payments.map((payment) => (
             <div
-              key={invoice.id}
+              key={payment.id}
               className="border p-3 bg-amber-100 bg-opacity-40 rounded-md"
             >
               <p className="text-sm">
-                <strong>Invoice ID:</strong> {invoice.id}
+                <strong>Payment ID:</strong> {payment.id}
               </p>
               <p className="text-sm">
-                <strong>Company:</strong> {invoice.companyName}
+                <strong>Company:</strong> {payment.company}
               </p>
               <p className="text-sm">
-                <strong>Total Amount:</strong> ${invoice.totalValue.toFixed(2)}
+                <strong>Total Amount:</strong> ${payment.amount.toFixed(2)}
               </p>
               <p className="text-sm">
                 <strong>Payment Date:</strong>{" "}
-                {new Date(invoice.updatedAt).toLocaleDateString()}
+                {new Date(payment.createdAt).toLocaleDateString()}
               </p>
-              <button onClick={handleClick} className="mt-2 w-full">
-                <Button
-                  href={`./invoices/${invoice.id}`}
-                  aria_label={`View details for invoice ${invoice.id}`}
-                  label="Go to Invoice"
-                />
-              </button>
             </div>
           ))}
         </div>
