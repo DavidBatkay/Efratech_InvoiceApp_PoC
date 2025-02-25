@@ -37,7 +37,11 @@ const DeleteInvoiceButton: React.FC<{
         aria-label={`${
           paid ? "Archive" : archived ? "Unarchive" : "Delete"
         } Invoice`}
-        className="bg-gradient-to-br from-red-400 to-red-600 hover:opacity-85 text-white font-bold py-2 px-4 rounded-md mt-4 flex items-center justify-center"
+        className={`bg-gradient-to-br ${
+          paid || archived
+            ? "from-blue-400 to-blue-600"
+            : "from-red-400 to-red-600"
+        } hover:opacity-85 text-white font-bold py-2 px-4 rounded-md mt-4 flex items-center justify-center`}
         onClick={() => setShowModal(true)}
       >
         {paid ? "Archive" : archived ? "Unarchive" : "Delete"}
