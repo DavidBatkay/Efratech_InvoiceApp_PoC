@@ -1,8 +1,8 @@
-"use client"; // This should be the very first line in the file
+"use client";
 
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Spinner from "./spinner";
 
 interface AuthGuardProps {
@@ -12,18 +12,18 @@ interface AuthGuardProps {
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname(); // ✅ Get current route
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login"); // Redirect to login page if user is not authenticated
+    if (status === "unauthenticated" && pathname !== "/login") {
+      router.replace("/login"); // ✅ Avoid unnecessary redirects
     }
-  }, [status, router]);
-  if (status === "unauthenticated") return null;
-  if (status === "loading") {
-    return <Spinner />; //NOTE You can customize the loading state
-  }
+  }, [status, pathname, router]);
 
-  return <>{children}</>; // Render the protected children if authenticated
+  if (status === "unauthenticated") return null;
+  if (status === "loading") return <Spinner />;
+
+  return <>{children}</>;
 };
 
 export default AuthGuard;

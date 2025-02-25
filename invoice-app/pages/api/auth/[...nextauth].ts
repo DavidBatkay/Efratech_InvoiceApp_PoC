@@ -20,10 +20,7 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        console.log("Attempting to authorize user:", credentials?.email);
-
         if (!credentials?.email || !credentials?.password) {
-          console.log("Missing credentials");
           return null;
         }
 
@@ -32,12 +29,10 @@ export const authOptions: AuthOptions = {
         });
 
         if (!user) {
-          console.log("User not found");
           return null;
         }
 
         if (!user.password) {
-          console.log("User has no password set.");
           return null;
         }
 
@@ -47,11 +42,9 @@ export const authOptions: AuthOptions = {
           user.password
         );
         if (!isValidPassword) {
-          console.log("Invalid password");
           return null; // Return null instead of throwing an error
         }
 
-        console.log("User authenticated successfully:", user);
         return {
           id: user.user_id.toString(), // ✅ Ensure user_id is included
           email: user.email,
