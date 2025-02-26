@@ -40,7 +40,6 @@ const SignupForm: React.FC = () => {
         //NOTE No error = Successful login
 
         setSuccess(true);
-        console.log("Signup successful!");
 
         setTimeout(() => {
           router.push("/login");

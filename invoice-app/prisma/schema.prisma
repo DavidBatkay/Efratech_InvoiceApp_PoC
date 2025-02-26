@@ -48,6 +48,7 @@ model Payment {
   amount    Float
   createdAt DateTime  @default(now()) // Tracks when the payment was made
   Invoice   Invoice[]
+  notes     String?
   user_id   Int
   user      User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }

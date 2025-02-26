@@ -28,16 +28,10 @@ const LoginForm: React.FC = () => {
       password: password,
     });
 
-    console.log("SignIn result:", result); // Log the result to check response
-
-    // Check if there was an error
     if (result?.error) {
       setError("Invalid email or password");
       console.error("Login Error: ", result.error);
     } else {
-      // Successful login
-      console.log("Login successful!", result);
-      // Optionally, redirect to another page
       router.push("/dashboard");
     }
   };

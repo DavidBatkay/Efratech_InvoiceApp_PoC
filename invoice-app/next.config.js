@@ -1,7 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["cdn-icons-png.flaticon.com"], // Allow external images
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ], // Allow external images
   },
   async redirects() {
     return [

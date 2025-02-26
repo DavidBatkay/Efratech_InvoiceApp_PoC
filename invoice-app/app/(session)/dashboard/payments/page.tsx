@@ -10,6 +10,7 @@ interface Payment {
   amount: number;
   createdAt: string;
   invoiceId: number;
+  notes: string;
 }
 
 const PaymentsPage = () => {
@@ -33,12 +34,10 @@ const PaymentsPage = () => {
         `${fetchUrl}?userId=${userId}&sortBy=${sortBy}&sortOrder=${sortOrder}`
       );
       const text = await res.text();
-      console.log("Raw API Response:", text);
 
       try {
         const data = JSON.parse(text);
 
-        console.log("Parsed API Data:", data);
         setPayments(data);
       } catch (error) {
         console.error("Error parsing JSON:", error);
@@ -47,8 +46,6 @@ const PaymentsPage = () => {
 
     fetchPayments();
   }, [userId, sortBy, sortOrder]);
-
-  console.log(payments);
 
   return (
     <div className="w-full p-4">
@@ -72,13 +69,14 @@ const PaymentsPage = () => {
 
       {/* Responsive Table */}
       <div className="w-full">
-        <table className="w-full border-collapse border border-gray-300 hidden md:table">
+        <table className="w-5/6 border-collapse border border-gray-300 hidden md:table mx-auto">
           <thead>
             <tr className="bg-gray-200 text-sm md:text-base">
               <th className="border p-2">Payment ID</th>
               <th className="border p-2">Company</th>
               <th className="border p-2">Total Amount</th>
               <th className="border p-2">Payment Date</th>
+              <th className="border p-2">Notes</th>
               <th className="border p-2">Details</th>
             </tr>
           </thead>
@@ -92,8 +90,19 @@ const PaymentsPage = () => {
                   {new Date(payment.createdAt).toLocaleDateString()}
                 </td>
                 <td className="border p-2 text-center">
+                  <Button
+                    fromColor="from-amber-600 scale-75 my-2"
+                    toColor="to-amber-800"
+                    href={`./payments/${payment.id}/edit`}
+                    aria_label={`Edit notes for payment ${payment.id}`}
+                    label={payment.notes ? "View Notes" : "Add Notes"}
+                  />
+                </td>
+
+                <td className="border p-2 text-center">
                   <button onClick={handleClick} className="w-full md:w-auto">
                     <Button
+                      fromColor="from-blue-400 my-2"
                       href={`./invoices/${payment.invoiceId}`}
                       aria_label={`View details for invoice ${payment.invoiceId}`}
                       label="Go to Invoice"
@@ -125,13 +134,25 @@ const PaymentsPage = () => {
                 <strong>Payment Date:</strong>{" "}
                 {new Date(payment.createdAt).toLocaleDateString()}
               </p>
-              <button onClick={handleClick} className="mt-2 w-full">
-                <Button
-                  href={`./invoices/${payment.invoiceId}`}
-                  aria_label={`View details for invoice ${payment.invoiceId}`}
-                  label="Go to Invoice"
-                />
-              </button>
+              <div className="flex justify-between">
+                <button className="mt-2 w-full">
+                  <Button
+                    fromColor="from-amber-600 scale-75"
+                    toColor="to-amber-800"
+                    href={`./payments/${payment.id}/edit`}
+                    aria_label={`Edit notes for payment ${payment.id}`}
+                    label={payment.notes ? "View Notes" : "Add Notes"}
+                  />
+                </button>
+
+                <button onClick={handleClick} className="mt-2 w-full">
+                  <Button
+                    href={`./invoices/${payment.invoiceId}`}
+                    aria_label={`View details for invoice ${payment.invoiceId}`}
+                    label="Go to Invoice"
+                  />
+                </button>
+              </div>
             </div>
           ))}
         </div>
