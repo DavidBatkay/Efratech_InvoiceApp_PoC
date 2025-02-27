@@ -7,11 +7,13 @@ const initialUsers = [
     user_id: 1,
     email: "john.doe@example.com",
     password: "password123",
+    createdAt: new Date("2024-12-12"),
   },
   {
     user_id: 2,
     email: "jane.smith@example.com",
     password: "password456",
+    createdAt: new Date("2025-01-15"),
   },
 ];
 

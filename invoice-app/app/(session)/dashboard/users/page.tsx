@@ -1,9 +1,6 @@
-const UsersPage: React.FC = () => {
-  return (
-    <div className="bold text-3xl flex flex-col min-h-screen justify-center items-center">
-      Manage Users Page
-    </div>
-  );
+import UsersList from "@/components/usersList";
+const UserPage: React.FC = () => {
+  return <UsersList />;
 };
 
-export default UsersPage;
+export default UserPage;
