@@ -170,33 +170,31 @@ const InvoiceFormComponent: React.FC = () => {
             {form.lineItems.map((item, index) => (
               <div
                 key={index}
-                className={`grid gap-4 mb-2 items-center ${
-                  form.lineItems.length > 1
-                    ? "grid-cols-[auto_1fr_1fr_1fr]"
-                    : "grid-cols-[1fr_1fr_1fr]"
-                }`}
+                className={`grid gap-4 mb-2 items-center grid-cols-[auto_auto_auto_auto]`}
               >
-                {/* Remove Button */}
-                {form.lineItems.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeLineItem(index)}
-                    className="text-red-500 text-lg"
-                  >
-                    ×
-                  </button>
-                )}
-                {/* Description */}
-                <input
-                  type="text"
-                  placeholder="Service Description"
-                  value={item.description}
-                  onChange={(e) =>
-                    handleLineItemChange(index, "description", e.target.value)
-                  }
-                  className="w-full border rounded-lg px-4 py-2"
-                  required
-                />
+                <div className="flex gap-2">
+                  {/* Remove Button */}
+                  {form.lineItems.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeLineItem(index)}
+                      className="text-red-500 text-lg"
+                    >
+                      ×
+                    </button>
+                  )}
+                  {/* Description */}
+                  <input
+                    type="text"
+                    placeholder="Service Description"
+                    value={item.description}
+                    onChange={(e) =>
+                      handleLineItemChange(index, "description", e.target.value)
+                    }
+                    className="w-full border rounded-lg px-4 py-2"
+                    required
+                  />
+                </div>
                 {/* Quantity */}
                 <input
                   type="number"

@@ -11,10 +11,12 @@ const PaymentFormEdit = ({
   const [notes, setNotes] = useState(payment.notes || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [buttonMessage, setButtonMessage] = useState("Save Changes");
   const router = useRouter();
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    setButtonMessage("Saving Changes...");
     try {
       await fetch(`/api/payments/edit/${payment.id}`, {
         method: "PATCH",
@@ -27,6 +29,12 @@ const PaymentFormEdit = ({
     } finally {
       setIsSubmitting(false);
       setShowConfirm(false);
+      setTimeout(() => {
+        setButtonMessage("Changes Saved!");
+        setTimeout(() => {
+          setButtonMessage("Save Changes");
+        }, 1000);
+      }, 1000);
     }
   };
 
@@ -47,7 +55,7 @@ const PaymentFormEdit = ({
           onClick={() => setShowConfirm(true)}
           disabled={isSubmitting}
         >
-          Save Changes
+          {buttonMessage}
         </button>
         <Link href="/dashboard/payments">
           <button className="mt-2 bg-gray-500 text-white px-4 py-2 rounded-md">

@@ -165,29 +165,34 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
               Services
             </h2>
             {form.lineItems.map((item, index) => (
-              <div key={index} className="flex space-x-4 mb-2 items-center">
-                {form.lineItems.length > 1 && (
-                  <button
-                    hidden={isPaid}
-                    type="button"
-                    onClick={() => removeLineItem(index)}
-                    className="text-red-500 text-lg"
-                  >
-                    ×
-                  </button>
-                )}
-                {/* Description */}
-                <input
-                  disabled={isPaid}
-                  type="text"
-                  placeholder="Service Description"
-                  value={item.description}
-                  onChange={(e) =>
-                    handleLineItemChange(index, "description", e.target.value)
-                  }
-                  className="w-full border rounded-lg px-4 py-2"
-                  required
-                />
+              <div
+                key={index}
+                className="grid gap-4 mb-2 items-center grid-cols-[auto_auto_auto_auto]"
+              >
+                <div className="flex">
+                  {form.lineItems.length > 1 && (
+                    <button
+                      hidden={isPaid}
+                      type="button"
+                      onClick={() => removeLineItem(index)}
+                      className="text-red-500 text-lg"
+                    >
+                      ×
+                    </button>
+                  )}
+                  {/* Description */}
+                  <input
+                    disabled={isPaid}
+                    type="text"
+                    placeholder="Service Description"
+                    value={item.description}
+                    onChange={(e) =>
+                      handleLineItemChange(index, "description", e.target.value)
+                    }
+                    className="w-full border rounded-lg px-4 py-2"
+                    required
+                  />
+                </div>
                 {/* Quantity */}
                 <input
                   disabled={isPaid}
@@ -212,7 +217,7 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
                   }
                   className="w-full border rounded-lg px-4 py-2"
                   step="0.01"
-                  min="0"
+                  min="0.01"
                   required
                 />
               </div>
