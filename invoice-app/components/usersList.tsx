@@ -5,6 +5,7 @@ import Button from "@/components/buttons/button";
 
 type User = {
   id: number;
+  name?: string;
   email: string;
   createdAt?: string;
 };
@@ -77,6 +78,7 @@ const UsersList: React.FC = () => {
               className="flex justify-between items-center border p-4 m-4 rounded-md shadow-md bg-white w-full"
             >
               <p className="font-semibold">{user.email}</p>
+              <p className="font-semibold">{user.name}</p>
               {user.createdAt && (
                 <p className="text-gray-500 text-sm">
                   {new Date(user.createdAt).toLocaleDateString()}

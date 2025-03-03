@@ -2,14 +2,37 @@
 
 import Item from "@/components/item";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+
+type User = {
+  user_id: string;
+  name?: string;
+};
 
 const DashBoard: React.FC = () => {
   const path = usePathname();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/user");
+        if (!res.ok) throw new Error("Failed to fetch user");
+
+        const data: User = await res.json();
+        setUser(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   return (
     <>
-      <span className="bold text-3xl text-white flex flex-col mt-5 justify-center items-center">
-        Welcome back !
+      <span className="font-bold text-3xl text-white flex flex-col mt-5 justify-center items-center">
+        Welcome back {user?.name || ""}!
       </span>
       <div className="bg-gray-400 shadow-md rounded-lg p-4 sm:p-8 md:p-16 mt-20">
         <div className="container mx-auto">
@@ -32,7 +55,6 @@ const DashBoard: React.FC = () => {
             >
               Manage Customers
             </Item>
-            {/*TODO get only the customers from personal invoices */}
             <Item href={`${path}/users`} description="Manage All Users">
               Manage Users
             </Item>
@@ -42,7 +64,5 @@ const DashBoard: React.FC = () => {
     </>
   );
 };
-
-/*NOTE managing pages not yet done */
 
 export default DashBoard;
