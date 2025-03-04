@@ -31,9 +31,11 @@ const DashBoard: React.FC = () => {
 
   return (
     <>
-      <span className="font-bold text-3xl text-white flex flex-col mt-5 justify-center items-center">
-        Welcome back {user?.name || ""}!
+      <span className="text-3xl text-white flex mt-5 justify-center items-center gap-2">
+        <p>Welcome back</p> <strong>{user?.name || ""}</strong>
+        <p>!</p>
       </span>
+
       <div className="bg-gray-400 shadow-md rounded-lg p-4 sm:p-8 md:p-16 mt-20">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
