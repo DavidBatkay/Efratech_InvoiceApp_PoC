@@ -170,7 +170,7 @@ const InvoiceFormComponent: React.FC = () => {
             {form.lineItems.map((item, index) => (
               <div
                 key={index}
-                className={`grid gap-4 mb-2 items-center grid-cols-[auto_auto_auto_auto]`}
+                className={`grid gap-4 mb-2 items-center grid-cols-1 md:grid-cols-[auto_auto_auto_auto]`}
               >
                 <div className="flex gap-2">
                   {/* Remove Button */}

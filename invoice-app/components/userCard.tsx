@@ -66,29 +66,35 @@ const UserCard = () => {
   if (!user) return <p>User not found.</p>;
 
   return (
-    <Card className="w-2/5 p-4 shadow-md">
+    <Card
+      className={`${
+        isEditing ? "border-4 border-white" : ""
+      } md:w-2/5 w-5/6 p-4 shadow-md transition-all duration-2000`}
+    >
       <CardHeader>
         <CardTitle>
           {isEditing ? (
-            <div className="flex gap-2 items-center">
+            <div className="md:flex grid grid-cols-1 gap-2 items-center max-h-15">
               <Input
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 className="w-full"
               />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsEditing(false)}
-              >
-                Cancel
-              </Button>
-              <Button size="sm" onClick={handleSave}>
-                Save
-              </Button>
+              <div className="flex justify-between">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsEditing(false)}
+                >
+                  Cancel
+                </Button>
+                <Button size="sm" onClick={handleSave}>
+                  Save
+                </Button>
+              </div>
             </div>
           ) : (
-            <div className="flex justify-between items-center">
+            <div className="md:flex grid grid-cols-1 justify-between items-center md:max-h-15 max-h-15">
               <span>{user.name || "No Name"}</span>
               <Button
                 variant="outline"

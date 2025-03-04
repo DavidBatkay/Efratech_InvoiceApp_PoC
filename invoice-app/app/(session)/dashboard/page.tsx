@@ -31,7 +31,7 @@ const DashBoard: React.FC = () => {
 
   return (
     <>
-      <span className="text-3xl text-white flex mt-5 justify-center items-center gap-2">
+      <span className="md:text-3xl text-xl text-white flex mt-5 justify-center items-center gap-2">
         <p>Welcome back</p> <strong>{user?.name || ""}</strong>
         <p>!</p>
       </span>

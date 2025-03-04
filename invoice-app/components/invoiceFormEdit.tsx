@@ -167,9 +167,10 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
             {form.lineItems.map((item, index) => (
               <div
                 key={index}
-                className="grid gap-4 mb-2 items-center grid-cols-[auto_auto_auto_auto]"
+                className="grid gap-4 mb-2 items-center grid-cols-1 md:grid-cols-[auto_auto_auto_auto]"
               >
-                <div className="flex">
+                <div className="md:flex grid-cols-1">
+                  <hr className="my-2" />
                   {form.lineItems.length > 1 && (
                     <button
                       hidden={isPaid}
@@ -180,6 +181,7 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
                       ×
                     </button>
                   )}
+
                   {/* Description */}
                   <input
                     disabled={isPaid}
