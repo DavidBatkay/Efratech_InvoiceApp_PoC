@@ -4,7 +4,9 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { ChangeEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import Spinner from "./spinner";
 const LoginForm: React.FC = () => {
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -32,11 +34,19 @@ const LoginForm: React.FC = () => {
       setError("Invalid email or password");
       console.error("Login Error: ", result.error);
     } else {
-      router.push("/dashboard");
+      setLoading(true);
+      setTimeout(() => {
+        router.refresh();
+        router.push("/dashboard");
+      }, 1000);
     }
   };
 
-  return (
+  return loading ? (
+    <div className="w-full">
+      <Spinner />
+    </div>
+  ) : (
     <div className="w-full max-w-xs">
       <form
         onSubmit={(e) => handleSubmit(e)}

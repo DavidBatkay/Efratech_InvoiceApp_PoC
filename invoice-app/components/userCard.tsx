@@ -95,7 +95,7 @@ const UserCard = () => {
             </div>
           ) : (
             <div className="md:flex grid grid-cols-1 justify-between items-center md:max-h-15 max-h-15">
-              <span>{user.name || "No Name"}</span>
+              <span className="my-2">{user.name || "No Name"}</span>
               <Button
                 variant="outline"
                 size="sm"
@@ -117,7 +117,7 @@ const UserCard = () => {
         </p>
       </CardContent>
       <CardFooter>
-        <p>User ID: {user.user_id}</p>
+        <p>User #{user.user_id}</p>
       </CardFooter>
     </Card>
   );
