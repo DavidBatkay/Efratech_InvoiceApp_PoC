@@ -101,8 +101,9 @@ const initialInvoices = [
 
 const seed = async () => {
   // Clean up existing data (optional)
-  // await prisma.invoice.deleteMany();
-  // await prisma.user.deleteMany(); // Clear users before seeding
+  await prisma.payment.deleteMany(); // Clear payments first
+  await prisma.invoice.deleteMany();
+  await prisma.user.deleteMany(); // Clear users before seeding
 
   // Seed users individually
   for (const user of initialUsers) {
@@ -115,10 +116,12 @@ const seed = async () => {
     });
   }
 
-  // Seed invoices
+  // Store created invoices
+  const createdInvoices = [];
+
   for (const invoice of initialInvoices) {
     const { user_id, ...data } = invoice;
-    await prisma.invoice.create({
+    const createdInvoice = await prisma.invoice.create({
       data: {
         ...data,
         user: {
@@ -129,6 +132,22 @@ const seed = async () => {
         },
       },
     });
+    createdInvoices.push(createdInvoice); // Store the created invoice with its id
+  }
+
+  // Now we can create payments
+  for (const invoice of createdInvoices) {
+    if (invoice.status === "PAID") {
+      await prisma.payment.create({
+        data: {
+          invoiceId: invoice.id,
+          amount: invoice.totalValue,
+          company: invoice.companyName,
+          user_id: invoice.user_id,
+          createdAt: invoice.updatedAt || new Date(),
+        },
+      });
+    }
   }
 
   console.log("Seeding completed successfully!");

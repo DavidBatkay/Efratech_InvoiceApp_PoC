@@ -1,5 +1,6 @@
 {
   "name": "invoice-app",
+  "type": "module",
   "version": "0.1.0",
   "prisma": {
     "seed": "node ./prisma/seed.js"
