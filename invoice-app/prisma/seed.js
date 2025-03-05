@@ -127,6 +127,8 @@ const seed = async () => {
         status: invoice.status,
         notes: invoice.notes,
         customer: { connect: { id: customer.id } },
+        customerName: customer.customerName, // Store customerName
+        customerEmail: customer.email, // Store customer email
         user: { connect: { user_id: customer.user_id } },
         lineItems: { create: invoice.lineItems },
       },

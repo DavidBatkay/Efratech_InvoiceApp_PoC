@@ -69,7 +69,7 @@ const InvoiceList: React.FC<{
           <li key={invoice.id}>
             <Invoice
               invoiceId={invoice.id}
-              invoiceTitle={invoice.companyName}
+              invoiceTitle={invoice.customer.customerName}
               invoiceTotalValue={invoice.totalValue}
               invoiceStatus={invoice.status}
               invoiceCreatedAt={invoice.createdAt}

@@ -1,8 +1,10 @@
 import React from "react";
+import Link from "next/link"; // Import Link from Next.js
 import BackButton from "./buttons/backButton";
 import EditButton from "./buttons/editButton";
 import DeleteInvoiceButton from "./buttons/deleteButton";
 import MarkAsPaidButton from "./buttons/markAsPaidButton";
+
 type LineItem = {
   id: number;
   description: string;
@@ -13,7 +15,9 @@ type LineItem = {
 
 type Invoice = {
   id: number;
-  companyName: string;
+  customerId: number; // New field
+  customerName: string; // New field
+  customerEmail: string; // New field
   dateOfCreation: Date;
   invoiceNumber: string;
   dueDate: Date;
@@ -34,7 +38,6 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
     <>
       <BackButton />
 
-      {/* <DeleteButton /> */}
       <div className="flex flex-col min-h-screen justify-center items-center bg-inherit py-10">
         <div className="flex justify-between w-full max-w-3xl py-3">
           <EditButton invoiceId={invoice.id} invoiceStatus={invoice.status} />
@@ -72,11 +75,18 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
                 </span>
               </div>
             </div>
+
             <div className="text-sm text-gray-500">
               <p>
-                Company:{" "}
-                <span className="font-medium">{invoice.companyName}</span>
+                Customer:{" "}
+                <Link
+                  href={`/dashboard/customers/${invoice.customerId}`}
+                  className="font-medium text-blue-600 hover:underline"
+                >
+                  {invoice.customerName}
+                </Link>
               </p>
+              <p>Email: {invoice.customerEmail}</p>
               <p>
                 Date of Creation: {invoice.dateOfCreation.toLocaleDateString()}
               </p>
@@ -137,7 +147,8 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
           </div>
         </div>
       </div>
-      <div className="flex justify-center items-center justify-items-center">
+
+      <div className="flex justify-center items-center">
         <MarkAsPaidButton
           invoiceId={invoice.id}
           invoiceStatus={invoice.status}

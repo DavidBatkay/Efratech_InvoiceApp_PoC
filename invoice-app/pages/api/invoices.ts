@@ -15,16 +15,27 @@ export default async function handler(
 
   if (req.method === "POST") {
     try {
-      const { companyName, dueDate, status, notes, lineItems, invoiceNumber } =
+      const { customerId, dueDate, status, notes, lineItems, invoiceNumber } =
         req.body;
 
-      if (!companyName || !dueDate || !invoiceNumber) {
+      if (!customerId || !dueDate || !invoiceNumber) {
         return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      // Ensure the customer belongs to the user
+      const customer = await prisma.customer.findFirst({
+        where: { id: customerId, user_id: session.user.user_id },
+      });
+
+      if (!customer) {
+        return res
+          .status(403)
+          .json({ error: "Customer not found or unauthorized" });
       }
 
       const newInvoice = await prisma.invoice.create({
         data: {
-          companyName,
+          customerId,
           totalValue: lineItems.reduce(
             (acc: number, item: any) => acc + item.quantity * item.unitPrice,
             0
@@ -41,6 +52,8 @@ export default async function handler(
               unitPrice: item.unitPrice,
             })),
           },
+          customerName: customer.customerName, // Store static values for deleted customers
+          customerEmail: customer.email,
         },
       });
 
@@ -66,7 +79,10 @@ export default async function handler(
 
       const invoices = await prisma.invoice.findMany({
         where: whereCondition,
-        include: { lineItems: true },
+        include: {
+          lineItems: true,
+          customer: true, // Fetch the related customer
+        },
         orderBy: { createdAt: sortOrder === "asc" ? "asc" : "desc" },
       });
 
