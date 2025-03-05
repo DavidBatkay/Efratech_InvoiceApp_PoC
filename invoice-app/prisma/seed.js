@@ -1,26 +1,42 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+
 const prisma = new PrismaClient();
 
 const initialUsers = [
   {
-    user_id: 1,
     email: "john.doe@example.com",
     password: "password123",
     createdAt: new Date("2024-12-12"),
   },
   {
-    user_id: 2,
     email: "jane.smith@example.com",
     password: "password456",
     createdAt: new Date("2025-01-15"),
   },
 ];
 
+const initialCustomers = [
+  {
+    email: "companyEmail@example.com",
+    customerName: "Example Company Inc.",
+    createdAt: new Date("2024-11-30"),
+  },
+  {
+    email: "ueo@example.com",
+    customerName: "UEO Inc.",
+    createdAt: new Date("2024-12-20"),
+  },
+  {
+    email: "companyEmail2@example.com",
+    customerName: "Example Company 2 Inc.",
+    createdAt: new Date("2025-01-10"),
+  },
+];
+
 const initialInvoices = [
   {
-    user_id: 1,
-    companyName: "Acme Corp",
+    customerIndex: 0,
     totalValue: 5000.0,
     invoiceNumber: "INV-2024-001",
     dueDate: new Date("2024-11-30"),
@@ -32,8 +48,7 @@ const initialInvoices = [
     ],
   },
   {
-    user_id: 1,
-    companyName: "Beta LLC",
+    customerIndex: 0,
     totalValue: 1500.0,
     invoiceNumber: "INV-2024-002",
     dueDate: new Date("2024-12-15"),
@@ -45,8 +60,7 @@ const initialInvoices = [
     ],
   },
   {
-    user_id: 1,
-    companyName: "Gamma Inc.",
+    customerIndex: 1,
     totalValue: 3200.5,
     invoiceNumber: "INV-2024-003",
     dueDate: new Date("2024-12-01"),
@@ -57,93 +71,78 @@ const initialInvoices = [
       { description: "Graphic Design", quantity: 2, unitPrice: 600 },
     ],
   },
-  {
-    user_id: 1,
-    companyName: "Delta Co.",
-    totalValue: 980.0,
-    invoiceNumber: "INV-2024-004",
-    dueDate: new Date("2024-11-20"),
-    status: "PAID",
-    notes: "Discount applied",
-    updatedAt: new Date("2024-11-20"),
-    lineItems: [
-      { description: "Consultation Services", quantity: 2, unitPrice: 400 },
-      { description: "Follow-up Support", quantity: 1, unitPrice: 180 },
-    ],
-  },
-  {
-    user_id: 1,
-    companyName: "Delta Co.",
-    totalValue: 280.0,
-    invoiceNumber: "INV-2024-023",
-    dueDate: new Date("2025-01-30"),
-    status: "PAID",
-    notes: "Follow up maintenance",
-    updatedAt: new Date("2024-12-10"),
-    lineItems: [
-      { description: "Follow-up Support", quantity: 1, unitPrice: 280 },
-    ],
-  },
-  {
-    user_id: 2,
-    companyName: "Epsilon Group",
-    totalValue: 4500.75,
-    invoiceNumber: "INV-2024-005",
-    dueDate: new Date("2024-12-10"),
-    status: "PAID",
-    notes: "Thank you for your prompt payment",
-    lineItems: [
-      { description: "Software Development", quantity: 15, unitPrice: 300 },
-      { description: "Hosting Services", quantity: 1, unitPrice: 750 },
-    ],
-  },
 ];
 
 const seed = async () => {
-  // Clean up existing data (optional)
-  await prisma.payment.deleteMany(); // Clear payments first
+  await prisma.payment.deleteMany();
   await prisma.invoice.deleteMany();
-  await prisma.user.deleteMany(); // Clear users before seeding
+  await prisma.customer.deleteMany();
+  await prisma.user.deleteMany();
 
-  // Seed users individually
+  // Create users and store their IDs
+  const users = [];
   for (const user of initialUsers) {
     const hashedPassword = await bcrypt.hash(user.password, 10);
-    await prisma.user.create({
-      data: {
-        ...user,
-        password: hashedPassword,
-      },
+    const createdUser = await prisma.user.create({
+      data: { ...user, password: hashedPassword },
     });
+    users.push(createdUser);
   }
 
-  // Store created invoices
-  const createdInvoices = [];
+  if (users.length === 0) {
+    throw new Error("User creation failed. Seeding aborted.");
+  }
 
+  // Create customers linked to users
+  const customers = [];
+  for (let i = 0; i < initialCustomers.length; i++) {
+    const user = users[i % users.length]; // Ensure valid user exists
+    const createdCustomer = await prisma.customer.create({
+      data: {
+        ...initialCustomers[i],
+        user: { connect: { user_id: user.user_id } },
+      },
+    });
+    customers.push(createdCustomer);
+  }
+
+  if (customers.length === 0) {
+    throw new Error("Customer creation failed. Seeding aborted.");
+  }
+
+  // Create invoices linked to customers
+  const invoices = [];
   for (const invoice of initialInvoices) {
-    const { user_id, ...data } = invoice;
+    const customer = customers[invoice.customerIndex];
+    if (!customer) {
+      console.error("Invalid customer reference for invoice:", invoice);
+      continue;
+    }
+
     const createdInvoice = await prisma.invoice.create({
       data: {
-        ...data,
-        user: {
-          connect: { user_id },
-        },
-        lineItems: {
-          create: invoice.lineItems,
-        },
+        totalValue: invoice.totalValue,
+        invoiceNumber: invoice.invoiceNumber,
+        dueDate: invoice.dueDate,
+        status: invoice.status,
+        notes: invoice.notes,
+        customer: { connect: { id: customer.id } },
+        user: { connect: { user_id: customer.user_id } },
+        lineItems: { create: invoice.lineItems },
       },
     });
-    createdInvoices.push(createdInvoice); // Store the created invoice with its id
+    invoices.push(createdInvoice);
   }
 
-  // Now we can create payments
-  for (const invoice of createdInvoices) {
+  // Create payments for paid invoices
+  for (const invoice of invoices) {
     if (invoice.status === "PAID") {
       await prisma.payment.create({
         data: {
           invoiceId: invoice.id,
           amount: invoice.totalValue,
-          company: invoice.companyName,
-          user_id: invoice.user_id,
+          customer: { connect: { id: invoice.customerId } }, // Replace company with customerId
+          user: { connect: { user_id: invoice.user_id } },
           createdAt: invoice.updatedAt || new Date(),
         },
       });
@@ -154,9 +153,9 @@ const seed = async () => {
 };
 
 seed()
-  .catch((e) => {
-    console.error("Error seeding data:", e);
-  })
+  .catch((e) => console.error("Error seeding data:", e))
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+//NOTE BUG TODO DO NOT TOUCH, HIGHLY FLAMMABLE

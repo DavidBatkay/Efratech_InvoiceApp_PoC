@@ -11,8 +11,12 @@ datasource db {
 }
 
 model Invoice {
-  id             Int        @id @default(autoincrement())
-  companyName    String
+  id         Int       @id @default(autoincrement())
+  customerId Int? // Nullable so we can remove the relation if the customer is deleted
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull) // ✅ Set to NULL instead of deleting invoice
+
+  customerName   String? // ✅ Store customer name separately
+  customerEmail  String? // ✅ Store customer email separately (optional)
   dateOfCreation DateTime   @default(now())
   totalValue     Float
   invoiceNumber  String     @unique
@@ -42,25 +46,38 @@ model LineItem {
 }
 
 model Payment {
-  id        Int       @id @default(autoincrement())
-  invoiceId Int       @unique
-  company   String // Will eventually be replaced with customerId
-  amount    Float
-  createdAt DateTime  @default(now()) // Tracks when the payment was made
-  Invoice   Invoice[]
-  notes     String?
-  user_id   Int
-  user      User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  id         Int       @id @default(autoincrement())
+  invoiceId  Int       @unique
+  customerId Int? // Nullable so we can remove the relation if the customer is deleted
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  amount     Float
+  createdAt  DateTime  @default(now()) // Tracks when the payment was made
+  Invoice    Invoice[]
+  notes      String?
+  user_id    Int
+  user       User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
 
 model User {
-  user_id  Int       @id @default(autoincrement())
-  email    String    @unique
-  name String?
-  password String?
-  createdAt DateTime @default(now())
-  invoices Invoice[]
-  Payment  Payment[]
+  user_id   Int        @id @default(autoincrement())
+  email     String     @unique
+  name      String?
+  password  String?
+  createdAt DateTime   @default(now())
+  invoices  Invoice[]
+  Payment   Payment[]
+  Customer  Customer[]
 
   @@map("users") // Optional: maps to "users" table in the database
+}
+
+model Customer {
+  id           Int       @id @default(autoincrement())
+  user         User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id      Int
+  email        String    @unique
+  customerName String
+  createdAt    DateTime  @default(now())
+  invoices     Invoice[]
+  Payment      Payment[]
 }
