@@ -108,17 +108,19 @@ const UserCard = () => {
         </CardTitle>
         <CardDescription>{user.email}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <p>
-          <strong>Joined:</strong>{" "}
-          {user.createdAt
-            ? new Date(user.createdAt).toLocaleDateString()
-            : "Unknown"}
-        </p>
-      </CardContent>
-      <CardFooter>
-        <p>User #{user.user_id}</p>
-      </CardFooter>
+      <div className="flex justify-between">
+        <CardContent>
+          <p>
+            <strong>Joined:</strong>{" "}
+            {user.createdAt
+              ? new Date(user.createdAt).toLocaleDateString()
+              : "Unknown"}
+          </p>
+        </CardContent>
+        <CardFooter>
+          <p>User #{user.user_id}</p>
+        </CardFooter>
+      </div>
     </Card>
   );
 };
