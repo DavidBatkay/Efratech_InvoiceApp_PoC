@@ -1,7 +1,9 @@
+import CustomerList from "@/components/customers/customerList";
+
 const CustomersPage: React.FC = () => {
   return (
-    <div className="bold text-3xl flex flex-col min-h-screen justify-center items-center">
-      Customers Page
+    <div className="flex flex-col min-h-screen justify-center items-center">
+      <CustomerList />
     </div>
   );
 };
