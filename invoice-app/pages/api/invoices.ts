@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import prisma from "@/lib/prisma";
 import { authOptions } from "./auth/[...nextauth]";
+import { LineItem } from "@prisma/client";
 
 export default async function handler(
   req: NextApiRequest,
@@ -37,7 +38,8 @@ export default async function handler(
         data: {
           customerId,
           totalValue: lineItems.reduce(
-            (acc: number, item: any) => acc + item.quantity * item.unitPrice,
+            (acc: number, item: LineItem) =>
+              acc + item.quantity * item.unitPrice,
             0
           ),
           invoiceNumber,
@@ -46,7 +48,7 @@ export default async function handler(
           notes: notes || null,
           user_id: session.user.user_id,
           lineItems: {
-            create: lineItems.map((item: any) => ({
+            create: lineItems.map((item: LineItem) => ({
               description: item.description,
               quantity: item.quantity,
               unitPrice: item.unitPrice,

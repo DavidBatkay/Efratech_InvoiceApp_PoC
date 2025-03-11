@@ -15,7 +15,7 @@ export default async function handler(
 
   if (req.method === "GET") {
     try {
-      let { sortBy = "createdAt", sortOrder = "desc", userId } = req.query;
+      const { sortBy = "createdAt", sortOrder = "desc" } = req.query;
 
       // Ensure sortBy is a valid field
       if (

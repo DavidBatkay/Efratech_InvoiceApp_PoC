@@ -1,13 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/lib/prisma";
 import { LineItem } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const { id } = req.query;
-
+  const session = await getServerSession(req, res, authOptions);
   if (!id || Array.isArray(id)) {
     return res.status(400).json({ error: "Invalid invoice ID" });
   }
@@ -31,15 +33,25 @@ export default async function handler(
           .json({ error: "Paid or Archived invoices cannot be edited" });
       }
 
-      const { companyName, dueDate, status, notes, lineItems, invoiceNumber } =
+      const { customerId, dueDate, status, notes, lineItems, invoiceNumber } =
         req.body;
+
+      const customer = await prisma.customer.findFirst({
+        where: {
+          id: Number(customerId),
+          user_id: session?.user.user_id,
+        },
+      });
+      if (!customer) return res.status(402).json({ error: "Invalid customer" });
 
       const updatedInvoice = await prisma.invoice.update({
         where: { id: Number(id) },
         data: {
-          companyName,
+          customerEmail: customer.email,
+          customerId: customer.id,
           totalValue: lineItems.reduce(
-            (acc: any, item: any) => acc + item.quantity * item.unitPrice,
+            (acc: number, item: LineItem) =>
+              acc + item.quantity * item.unitPrice,
             0
           ),
           invoiceNumber,

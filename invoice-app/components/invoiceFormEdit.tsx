@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 interface Invoice {
   id: number;
-  companyName: string;
+  customerId: number;
   totalValue: number;
   invoiceNumber: string;
   dueDate: Date;
@@ -17,7 +17,7 @@ interface Invoice {
 const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
   const router = useRouter();
   const [form, setForm] = useState(invoice);
-  const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState(false);
   const [confirmUpdate, setConfirmUpdate] = useState(false);
   const isPaid = invoice.status === "PAID";
   const handleInputChange = (
@@ -73,7 +73,7 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
     try {
       if (isPaid) throw new Error("Paid invoices cannot be edited");
       const updatedInvoice = {
-        companyName: form.companyName,
+        customerId: form.customerId,
         totalValue: calculateTotalValue(),
         invoiceNumber: form.invoiceNumber,
         dueDate: new Date(form.dueDate).toISOString(), // Ensure it's a valid date
@@ -92,11 +92,10 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
         body: JSON.stringify(updatedInvoice),
       });
 
-      if (!response.ok) throw new Error("Failed to update invoice");
+      if (!response.ok) setError(true);
 
-      setShowModal(true);
       setTimeout(() => {
-        setShowModal(false);
+        setError(false);
         router.push(`/dashboard/invoices/${invoice.id}`);
       }, 2000);
     } catch (error) {
@@ -118,13 +117,13 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-1">
-              Company Name
+              Customer Id
             </label>
             <input
               disabled={isPaid}
               type="text"
-              name="companyName"
-              value={form.companyName}
+              name="customerId"
+              value={form.customerId}
               onChange={handleInputChange}
               className="w-full border rounded-lg px-4 py-2"
               required
@@ -264,30 +263,37 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
 
       {confirmUpdate && !isPaid && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-xl font-semibold text-gray-800">
-              Confirm Update
-            </h2>
-            <p className="text-gray-700">
-              Are you sure you want to update this invoice?
-            </p>
-            <div className="mt-4 flex justify-center gap-4">
-              <button
-                disabled={isPaid}
-                onClick={confirmSubmit}
-                className="bg-green-500 text-white py-2 px-4 rounded-lg"
-              >
-                Confirm
-              </button>
-              <button
-                disabled={isPaid}
-                onClick={() => setConfirmUpdate(false)}
-                className="bg-gray-400 text-white py-2 px-4 rounded-lg"
-              >
-                Cancel
-              </button>
+          {error ? (
+            <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+              Failed to update invoice
             </div>
-          </div>
+          ) : (
+            <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+              <h2 className="text-xl font-semibold text-gray-800">
+                Confirm Update
+              </h2>
+              <p className="text-gray-700">
+                Are you sure you want to update this invoice?
+              </p>
+
+              <div className="mt-4 flex justify-center gap-4">
+                <button
+                  disabled={isPaid}
+                  onClick={confirmSubmit}
+                  className="bg-green-500 text-white py-2 px-4 rounded-lg"
+                >
+                  Confirm
+                </button>
+                <button
+                  disabled={isPaid}
+                  onClick={() => setConfirmUpdate(false)}
+                  className="bg-gray-400 text-white py-2 px-4 rounded-lg"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
