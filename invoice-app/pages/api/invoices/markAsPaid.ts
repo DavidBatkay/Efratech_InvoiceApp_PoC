@@ -44,7 +44,7 @@ export default async function handler(
       data: {
         invoiceId: updatedInvoice.id,
         amount: updatedInvoice.totalValue,
-        company: updatedInvoice.companyName, // Using company from invoice
+        customerId: updatedInvoice.customerId,
         user_id: updatedInvoice.user_id,
       },
     });
