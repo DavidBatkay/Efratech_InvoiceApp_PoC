@@ -1,15 +1,7 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import Button from "../buttons/button";
 
 type Customer = {
   id: string;
@@ -29,24 +21,17 @@ const CustomerCard: React.FC<CustomerComponentProps> = ({ customer }) => {
         <CardTitle className="flex justify-between items-center">
           <span>{customer.customerName}</span>
         </CardTitle>
-        <CardDescription>{customer.email}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <p>
-          <strong>Joined:</strong>{" "}
-          {customer.createdAt
-            ? new Date(customer.createdAt).toLocaleDateString()
-            : "Unknown"}
-        </p>
-      </CardContent>
       <CardFooter>
-        <div className="flex justify-between">
-          <p className="text-gray-500">Customer #{customer.id}</p>
-          <Link href={`/dashboard/customers/${customer.id}`}>
-            <Button variant="outline" size="sm">
-              View Details
-            </Button>
-          </Link>
+        <div className="flex justify-between gap-2">
+          <p className="text-gray-500 text-center py-5">
+            Customer #{customer.id}
+          </p>
+          <Button
+            href={`./customers/${customer.id}`}
+            aria_label={`View details for customer ${customer.id}`}
+            label="Details"
+          />
         </div>
       </CardFooter>
     </Card>
