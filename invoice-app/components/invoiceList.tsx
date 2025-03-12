@@ -17,7 +17,7 @@ const InvoiceList: React.FC<{
   useEffect(() => {
     const fetchInvoices = async () => {
       const res = await fetch(
-        `${fetchUrl}?userId=${userId}&sortOrder=${sortOrder}&filter=${filter}`
+        `${fetchUrl}?sortOrder=${sortOrder}&filter=${filter}`
       );
       const data = await res.json();
       setInvoices(data);

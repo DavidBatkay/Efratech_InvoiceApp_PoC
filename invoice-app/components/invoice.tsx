@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Button from "./buttons/button";
 
 interface InvoiceProps {
