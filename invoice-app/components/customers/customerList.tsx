@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import CustomerCard from "./customerCard";
 import { Button } from "@/components/ui/button";
-
+import CreateCustomerButton from "./createCustomerButton";
 interface Customer {
   id: string;
   customerName: string;
@@ -54,6 +54,7 @@ const CustomerList: React.FC = () => {
         </Button>
       </div>
       <div className="p-2 border-b grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <CreateCustomerButton />
         {customers.map((customer) => (
           <CustomerCard key={customer.id} customer={customer} />
         ))}
