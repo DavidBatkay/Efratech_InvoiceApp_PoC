@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import InvoiceDetails from "@/components/invoiceDetails";
 const InvoiceIdPage = async ({ params }: { params: { invoiceId: string } }) => {
   const invoice = await fetchInvoice(params.invoiceId);
-  if (!invoice) notFound();
+  if (!invoice || invoice?.id === null) notFound();
 
   return (
     <div className="relative p-4">

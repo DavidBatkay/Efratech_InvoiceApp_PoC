@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 const CustomerDetailsAnchor: React.FC<{
-  invoice: { customerId: number; customerName: string };
+  invoice: { customerId: number | null; customerName: string | null };
 }> = ({ invoice }) => {
   const handleClick = () => {
     sessionStorage.setItem("previousPage", "invoices");

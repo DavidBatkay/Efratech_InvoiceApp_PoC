@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 interface Invoice {
   id: number;
-  customerId: number;
+  customerId: number | null;
   totalValue: number;
   invoiceNumber: string;
   dueDate: Date;
@@ -123,7 +123,7 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
               disabled={isPaid}
               type="text"
               name="customerId"
-              value={form.customerId}
+              value={form.customerId ? form.customerId : ""}
               onChange={handleInputChange}
               className="w-full border rounded-lg px-4 py-2"
               required

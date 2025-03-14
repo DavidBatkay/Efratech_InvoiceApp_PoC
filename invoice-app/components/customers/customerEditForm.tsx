@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const CustomerEditForm: React.FC<{
-  customer: { id: string; customerName: string; email: string };
+  customer: { id: number; customerName: string; email: string };
 }> = ({ customer }) => {
   const router = useRouter();
   const [form, setForm] = useState({

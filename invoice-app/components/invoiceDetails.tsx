@@ -14,9 +14,9 @@ type LineItem = {
 
 type Invoice = {
   id: number;
-  customerId: number; // New field
-  customerName: string; // New field
-  customerEmail: string; // New field
+  customerId: number | null; // New field
+  customerName: string | null; // New field
+  customerEmail: string | null; // New field
   dateOfCreation: Date;
   invoiceNumber: string;
   dueDate: Date;
