@@ -15,6 +15,10 @@ interface CustomerComponentProps {
 }
 
 const CustomerCard: React.FC<CustomerComponentProps> = ({ customer }) => {
+  const handleClick = () => {
+    sessionStorage.setItem("previousPage", "customers");
+  };
+
   return (
     <Card className="p-4 shadow-md transition-all duration-200">
       <CardHeader>
@@ -27,11 +31,13 @@ const CustomerCard: React.FC<CustomerComponentProps> = ({ customer }) => {
           <p className="text-gray-500 text-center py-5">
             Customer #{customer.id}
           </p>
-          <Button
-            href={`./customers/${customer.id}`}
-            aria_label={`View details for customer ${customer.id}`}
-            label="Details"
-          />
+          <button onClick={handleClick}>
+            <Button
+              href={`./customers/${customer.id}`}
+              aria_label={`View details for customer ${customer.id}`}
+              label="Details"
+            />
+          </button>
         </div>
       </CardFooter>
     </Card>

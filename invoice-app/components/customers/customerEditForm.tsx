@@ -22,6 +22,11 @@ const CustomerEditForm: React.FC<{
     setForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
+  const handleCancel = async (e: React.FormEvent) => {
+    e.preventDefault();
+    router.replace(`/dashboard/customers/${customer.id}`);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -86,12 +91,19 @@ const CustomerEditForm: React.FC<{
           </div>
 
           {/* Submit Button */}
-          <div className="mt-6">
+          <div className="mt-6 flex justify-between gap-4">
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg"
+              className="w-3/5 bg-blue-500 text-white font-semibold py-2 rounded-lg"
             >
               Save Changes
+            </button>
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="w-2/5 bg-gray-400 text-white font-semibold py-2 rounded-lg"
+            >
+              Cancel
             </button>
           </div>
         </form>

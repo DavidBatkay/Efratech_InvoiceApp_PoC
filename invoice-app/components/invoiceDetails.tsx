@@ -1,10 +1,9 @@
 import React from "react";
-import Link from "next/link"; // Import Link from Next.js
 import BackButton from "./buttons/backButton";
 import EditButton from "./buttons/editButton";
 import DeleteInvoiceButton from "./buttons/deleteButton";
 import MarkAsPaidButton from "./buttons/markAsPaidButton";
-
+import CustomerDetailsAnchor from "./customers/customerDetailsAnchor";
 type LineItem = {
   id: number;
   description: string;
@@ -78,13 +77,7 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
 
             <div className="text-sm text-gray-500">
               <p>
-                Customer:{" "}
-                <Link
-                  href={`/dashboard/customers/${invoice.customerId}`}
-                  className="font-medium text-blue-600 hover:underline"
-                >
-                  {invoice.customerName}
-                </Link>
+                Customer: <CustomerDetailsAnchor invoice={invoice} />
               </p>
               <p>Email: {invoice.customerEmail}</p>
               <p>
