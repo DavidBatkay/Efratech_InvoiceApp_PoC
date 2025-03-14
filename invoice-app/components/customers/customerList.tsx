@@ -38,6 +38,7 @@ const CustomerList: React.FC = () => {
   return (
     <div>
       <div className="flex gap-2 mb-4">
+        <CreateCustomerButton />
         <Button
           onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
           variant="outline"
@@ -54,7 +55,6 @@ const CustomerList: React.FC = () => {
         </Button>
       </div>
       <div className="p-2 border-b grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <CreateCustomerButton />
         {customers.map((customer) => (
           <CustomerCard key={customer.id} customer={customer} />
         ))}

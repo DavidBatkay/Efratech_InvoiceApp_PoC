@@ -7,9 +7,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "GET")
-    return res.status(405).json({ error: "Method Not Allowed" });
-
   const session = await getServerSession(req, res, authOptions);
   if (!session) return res.status(401).json({ error: "Unauthorized" });
 
@@ -17,16 +14,56 @@ export default async function handler(
   if (!id || isNaN(Number(id)))
     return res.status(400).json({ error: "Invalid customer ID" });
 
-  try {
-    const customer = await prisma.customer.findFirst({
-      where: { id: Number(id), user_id: session.user.user_id },
-    });
+  if (req.method === "GET") {
+    try {
+      const customer = await prisma.customer.findFirst({
+        where: { id: Number(id), user_id: session.user.user_id },
+      });
 
-    if (!customer) return res.status(404).json({ error: "Customer not found" });
+      if (!customer)
+        return res.status(404).json({ error: "Customer not found" });
 
-    return res.status(200).json(customer);
-  } catch (error) {
-    console.error("Error fetching customer:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+      return res.status(200).json(customer);
+    } catch (error) {
+      console.error("Error fetching customer:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
   }
+
+  if (req.method === "PUT") {
+    try {
+      const { customerName, email } = req.body;
+
+      if (!customerName?.trim() || !email?.trim()) {
+        return res
+          .status(400)
+          .json({ error: "Customer name and email are required." });
+      }
+
+      const updatedCustomer = await prisma.customer.update({
+        where: { id: Number(id), user_id: session.user.user_id },
+        data: { customerName, email },
+      });
+
+      return res.status(200).json(updatedCustomer);
+    } catch (error) {
+      console.error("Error updating customer:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+
+  if (req.method === "DELETE") {
+    try {
+      await prisma.customer.delete({
+        where: { id: Number(id), user_id: session.user.user_id },
+      });
+
+      return res.status(200).json({ message: "Customer deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting customer:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+
+  return res.status(405).json({ error: "Method Not Allowed" });
 }

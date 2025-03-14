@@ -1,6 +1,7 @@
 import { Button } from "../ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import CustomerDeleteButton from "./customerDeleteButton";
 import {
   Card,
   CardContent,
@@ -46,7 +47,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({ customer }) => {
         </CardHeader>
         <CardContent>
           <p className="text-gray-700 text-sm">
-            <strong>Joined:</strong>{" "}
+            <strong>Created:</strong>{" "}
             {customer.createdAt
               ? new Date(customer.createdAt).toLocaleDateString()
               : "Unknown"}
@@ -61,9 +62,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({ customer }) => {
                 Edit
               </Button>
             </Link>
-            <Button variant="destructive" size="sm">
-              Delete
-            </Button>
+            <CustomerDeleteButton customerId={customer.id} />
           </div>
         </CardFooter>
       </Card>

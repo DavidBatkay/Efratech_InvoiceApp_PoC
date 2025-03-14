@@ -4,6 +4,14 @@ import { useEffect, useState } from "react";
 import CreateInvoiceButton from "@/components/createInvoice";
 import Invoice from "@/components/invoice";
 
+type Invoice = {
+  id: number;
+  customer: { customerName: string };
+  totalValue: number;
+  status: string;
+  createdAt: Date;
+};
+
 const InvoiceList: React.FC<{
   userId: number;
   fetchUrl: string;
@@ -65,10 +73,10 @@ const InvoiceList: React.FC<{
       </div>
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 justify-items-center">
         <CreateInvoiceButton />
-        {invoices.map((invoice: any) => (
+        {invoices.map((invoice: Invoice) => (
           <li key={invoice.id}>
             <Invoice
-              invoiceId={invoice.id}
+              invoiceId={String(invoice.id)}
               invoiceTitle={invoice.customer.customerName}
               invoiceTotalValue={invoice.totalValue}
               invoiceStatus={invoice.status}
