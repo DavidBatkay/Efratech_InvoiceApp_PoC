@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Button from "@/components/buttons/button";
 
 type User = {
-  id: number;
+  user_id: number;
   name?: string;
   email: string;
   createdAt?: string;
@@ -74,7 +74,7 @@ const UsersList: React.FC = () => {
         {users.length > 0 ? (
           users.map((user) => (
             <div
-              key={user.id}
+              key={user.user_id}
               className="flex justify-between items-center border p-4 m-4 rounded-md shadow-md bg-white w-full"
             >
               <p className="font-semibold">{user.email}</p>
