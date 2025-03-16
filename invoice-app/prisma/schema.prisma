@@ -75,7 +75,7 @@ model Customer {
   id           Int       @id @default(autoincrement())
   user         User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   user_id      Int
-  email        String    @unique
+  email        String    
   customerName String
   createdAt    DateTime  @default(now())
   invoices     Invoice[]

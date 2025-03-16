@@ -4,6 +4,7 @@ import EditButton from "./buttons/editButton";
 import DeleteInvoiceButton from "./buttons/deleteButton";
 import MarkAsPaidButton from "./buttons/markAsPaidButton";
 import CustomerDetailsAnchor from "./customers/customerDetailsAnchor";
+import { Customer } from "@prisma/client";
 type LineItem = {
   id: number;
   description: string;
@@ -14,6 +15,7 @@ type LineItem = {
 
 type Invoice = {
   id: number;
+  customer?: Customer | null;
   customerId: number | null; // New field
   customerName: string | null; // New field
   customerEmail: string | null; // New field
@@ -79,7 +81,12 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice }) => {
               <p>
                 Customer: <CustomerDetailsAnchor invoice={invoice} />
               </p>
-              <p>Email: {invoice.customerEmail}</p>
+              <p>
+                Email:{" "}
+                {invoice.customer?.email
+                  ? invoice.customer?.email
+                  : invoice.customerEmail}
+              </p>
               <p>
                 Date of Creation: {invoice.dateOfCreation.toLocaleDateString()}
               </p>

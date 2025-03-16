@@ -14,7 +14,7 @@ export async function getInvoiceById(id: number) {
   if (!session || !session.user?.user_id) return null;
   return await prisma.invoice.findFirst({
     where: { id, user_id: session.user.user_id },
-    include: { lineItems: true },
+    include: { lineItems: true, customer: true },
   });
 }
 

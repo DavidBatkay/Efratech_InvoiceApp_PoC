@@ -1,9 +1,12 @@
 "use client";
-
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 const BackButton = () => {
-  const previous = sessionStorage.getItem("previousPage");
+  const path = usePathname();
+  const previous = path?.includes("invoices/")
+    ? "invoices"
+    : sessionStorage.getItem("previousPage");
   return (
     <div className="fixed top-26 left-4 sm:top-36 sm:left-32 z-50 rounded-full shadow-emerald-100 shadow-2xl">
       <Link href={`/dashboard/${previous}`}>

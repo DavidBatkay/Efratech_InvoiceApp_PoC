@@ -69,7 +69,10 @@ export default async function handler(
   if (req.method === "GET") {
     try {
       const { sortOrder = "desc", filter = "all" } = req.query;
-      const whereCondition: any = { user_id: session.user.user_id };
+      const whereCondition: {
+        user_id: number;
+        status?: string | { not: string };
+      } = { user_id: session.user.user_id };
 
       if (filter === "all") {
         whereCondition.status = { not: "ARCHIVED" }; // Exclude archived invoices

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 const InvoiceFormComponent: React.FC = () => {
   const router = useRouter();
   const [form, setForm] = useState({
-    companyName: "",
+    customerId: "",
     totalValue: 0,
     invoiceNumber: `INV-${new Date().getFullYear()}-${Date.now()
       .toString()
@@ -78,7 +78,7 @@ const InvoiceFormComponent: React.FC = () => {
 
     try {
       const invoiceData = {
-        companyName: form.companyName,
+        customerId: Number(form.customerId),
         totalValue: calculateTotalValue(),
         invoiceNumber: form.invoiceNumber,
         dueDate: form.dueDate,
@@ -121,12 +121,12 @@ const InvoiceFormComponent: React.FC = () => {
           {/* Company Name */}
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-1">
-              Company Name
+              Customer Id
             </label>
             <input
               type="text"
-              name="companyName"
-              value={form.companyName}
+              name="customerId"
+              value={form.customerId}
               onChange={handleInputChange}
               className="w-full border rounded-lg px-4 py-2"
               required
