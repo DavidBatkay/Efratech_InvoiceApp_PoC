@@ -54,6 +54,26 @@ export default async function handler(
 
   if (req.method === "DELETE") {
     try {
+      const customer = await prisma.customer.findUnique({
+        where: { id: Number(id), user_id: session.user.user_id },
+        select: { customerName: true, email: true },
+      });
+
+      if (!customer) {
+        return res.status(404).json({ error: "Customer not found" });
+      }
+
+      // Update related invoices before deleting the customer
+      await prisma.invoice.updateMany({
+        where: { customerId: Number(id) },
+        data: {
+          customerId: null, // Detach from deleted customer
+          customerName: customer.customerName, // Preserve name
+          customerEmail: customer.email, // Preserve email
+        },
+      });
+
+      // Now, delete the customer
       await prisma.customer.delete({
         where: { id: Number(id), user_id: session.user.user_id },
       });

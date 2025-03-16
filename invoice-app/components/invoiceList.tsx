@@ -7,6 +7,7 @@ import Invoice from "@/components/invoice";
 type Invoice = {
   id: number;
   customer: { customerName: string };
+  customerName: string;
   totalValue: number;
   status: string;
   createdAt: Date;
@@ -77,7 +78,11 @@ const InvoiceList: React.FC<{
           <li key={invoice.id}>
             <Invoice
               invoiceId={String(invoice.id)}
-              invoiceTitle={invoice.customer.customerName}
+              invoiceTitle={
+                invoice.customer?.customerName
+                  ? invoice.customer?.customerName
+                  : invoice.customerName
+              }
               invoiceTotalValue={invoice.totalValue}
               invoiceStatus={invoice.status}
               invoiceCreatedAt={invoice.createdAt}
