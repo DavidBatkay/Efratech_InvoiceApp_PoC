@@ -24,6 +24,7 @@ const UserCard = () => {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -52,13 +53,22 @@ const UserCard = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newName }),
       });
-
-      if (!res.ok) throw new Error("Failed to update username");
+      const data = await res.json();
+      if (!res.ok)
+        throw new Error(`${data.error}` || "Failed to update username");
 
       setUser((prev) => (prev ? { ...prev, name: newName } : null));
       setIsEditing(false);
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        setError(error.message); // Set error message from API
+        setNewName("");
+      } else {
+        setError("An unexpected error occurred.");
+      }
+      setTimeout(() => {
+        setError(null);
+      }, 2000);
     }
   };
 
@@ -76,6 +86,7 @@ const UserCard = () => {
           {isEditing ? (
             <div className="md:flex grid grid-cols-1 gap-2 items-center max-h-15">
               <Input
+                placeholder={error ? error : ""}
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 className="w-full"
