@@ -4,11 +4,25 @@ import Link from "next/link";
 import Image from "next/image";
 const BackButton = () => {
   const path = usePathname();
-  const previous = path?.includes("invoices/")
-    ? path?.includes("payments")
-      ? "payments"
-      : sessionStorage.getItem("previousPage")
-    : "";
+  let previous = "";
+  switch (true) {
+    case !!sessionStorage.getItem("previousPage"): // Ensures it's a non-empty string
+      previous = sessionStorage.getItem("previousPage")!;
+      break;
+    case path?.includes("dashboard/payments"):
+      previous = "payments";
+      break;
+    case path?.includes("dashboard/customers"):
+      previous = "customers";
+      break;
+    case path?.includes("dashboard/invoices"):
+      previous = "invoices";
+      break;
+    default:
+      previous = sessionStorage.getItem("previousPage") || "";
+      break;
+  }
+
   return (
     <div className="fixed top-26 left-4 sm:top-36 sm:left-32 z-50 rounded-full shadow-emerald-100 shadow-2xl">
       <Link href={`/dashboard/${previous}`}>
