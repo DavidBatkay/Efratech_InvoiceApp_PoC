@@ -38,6 +38,9 @@ export default async function handler(
         where: {
           user_id: session.user.user_id, // Ensuring the invoice belongs to the user
         },
+        include: {
+          customer: true,
+        },
         orderBy: {
           [sortBy]: sortOrder,
         },

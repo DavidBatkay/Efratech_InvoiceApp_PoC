@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+
 const PaymentFormEdit = ({
   payment,
 }: {
@@ -10,7 +11,6 @@ const PaymentFormEdit = ({
 }) => {
   const [notes, setNotes] = useState(payment.notes || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [buttonMessage, setButtonMessage] = useState("Save Changes");
   const router = useRouter();
 
@@ -23,12 +23,11 @@ const PaymentFormEdit = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ notes }),
       });
-      router.push(`/dashboard/payments/${payment.id}/edit`);
+      router.refresh(); // Ensure fresh data
     } catch (error) {
       console.error("Failed to update payment", error);
     } finally {
       setIsSubmitting(false);
-      setShowConfirm(false);
       setTimeout(() => {
         setButtonMessage("Changes Saved!");
         setTimeout(() => {
@@ -52,7 +51,7 @@ const PaymentFormEdit = ({
       <div className="flex justify-between gap-4">
         <button
           className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md"
-          onClick={() => setShowConfirm(true)}
+          onClick={handleSubmit}
           disabled={isSubmitting}
         >
           {buttonMessage}
@@ -63,29 +62,6 @@ const PaymentFormEdit = ({
           </button>
         </Link>
       </div>
-      {showConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-4 rounded-md shadow-lg">
-            <p>Are you sure you want to update the notes?</p>
-            <div className="flex justify-end mt-2">
-              <button
-                className="mr-2 px-4 py-2 bg-gray-300 rounded-md"
-                onClick={() => setShowConfirm(false)}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 bg-green-500 text-white rounded-md"
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

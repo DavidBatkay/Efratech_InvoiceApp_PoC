@@ -7,6 +7,7 @@ import Link from "next/link";
 interface Payment {
   id: number;
   customerId: number;
+  customer: { customerName: string };
   amount: number;
   createdAt: string;
   invoiceId: number;
@@ -74,7 +75,7 @@ const PaymentsPage = () => {
             <thead>
               <tr className="bg-gray-200 text-sm md:text-base">
                 <th className="border p-2">Payment ID</th>
-                <th className="border p-2">Customer ID</th>
+                <th className="border p-2">Customer</th>
                 <th className="border p-2">Total Amount</th>
                 <th className="border p-2">Payment Date</th>
                 <th className="border p-2">Notes</th>
@@ -85,7 +86,9 @@ const PaymentsPage = () => {
               {payments.map((payment) => (
                 <tr key={payment.id} className="border">
                   <td className="border p-2">{payment.id}</td>
-                  <td className="border p-2">{payment.customerId}</td>
+                  <td className="border p-2">
+                    {payment.customer?.customerName || "Deleted Customer"}
+                  </td>
                   <td className="border p-2">${payment.amount.toFixed(2)}</td>
                   <td className="border p-2">
                     {new Date(payment.createdAt).toLocaleDateString()}
@@ -137,7 +140,8 @@ const PaymentsPage = () => {
                 <strong>Payment ID:</strong> {payment.id}
               </p>
               <p className="text-sm">
-                <strong>Customer:</strong> {payment.customerId}
+                <strong>Customer:</strong>{" "}
+                {payment.customer?.customerName || "Deleted Customer"}
               </p>
               <p className="text-sm">
                 <strong>Total Amount:</strong> ${payment.amount.toFixed(2)}
