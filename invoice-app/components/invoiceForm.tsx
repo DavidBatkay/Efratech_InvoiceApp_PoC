@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import CustomerSelect from "./customers/customerSelect";
 const InvoiceFormComponent: React.FC = () => {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -134,19 +134,11 @@ const InvoiceFormComponent: React.FC = () => {
 
         <form onSubmit={handleSubmit}>
           {/* Company Name */}
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-1">
-              Customer Id
-            </label>
-            <input
-              type="text"
-              name="customerId"
-              value={form.customerId}
-              onChange={handleInputChange}
-              className="w-full border rounded-lg px-4 py-2"
-              required
-            />
-          </div>
+          <CustomerSelect
+            setCustomerId={(id) =>
+              setForm((prev) => ({ ...prev, customerId: id }))
+            }
+          />
 
           {/* Due Date */}
           <div className="mb-4">

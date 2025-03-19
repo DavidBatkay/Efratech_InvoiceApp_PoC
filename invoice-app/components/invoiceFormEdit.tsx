@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import CustomerSelect from "./customers/customerSelect";
 interface Invoice {
   id: number;
   customerId: number | null;
@@ -116,20 +116,18 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
         </h1>
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-1">
-              Customer Id
-            </label>
-            <input
-              disabled={isPaid}
-              type="text"
-              name="customerId"
-              value={form.customerId ? form.customerId : ""}
-              onChange={handleInputChange}
-              className="w-full border rounded-lg px-4 py-2"
-              required
-            />
-          </div>
+          <CustomerSelect
+            selectedCustomerId={
+              form.customerId ? form.customerId.toString() : null
+            }
+            setCustomerId={(customerId) =>
+              setForm((prevForm) => ({
+                ...prevForm,
+                customerId: Number(customerId),
+              }))
+            }
+            disabled={isPaid}
+          />
 
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-1">
