@@ -1,16 +1,14 @@
 "use client";
 
-import Item from "@/components/item";
-import { usePathname } from "next/navigation";
+import Menu from "@/components/dashboard/menu";
 import { useEffect, useState } from "react";
-
+import Statistics from "@/components/dashboard/statistics";
 type User = {
   user_id: string;
   name?: string;
 };
 
 const DashBoard: React.FC = () => {
-  const path = usePathname();
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -35,32 +33,12 @@ const DashBoard: React.FC = () => {
         <p>Welcome back</p> <strong>{user?.name || ""}</strong>
         <p>!</p>
       </span>
-
-      <div className="bg-gray-400 shadow-md rounded-lg p-4 sm:p-8 md:p-16 mt-20">
+      <div className="mt-4 mx-auto max-w-5xl">
+        <Statistics />
+      </div>
+      <div className="bg-gray-400 shadow-md rounded-lg p-4 sm:p-8 md:p-16 mt-14">
         <div className="container mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-            <Item
-              href={`${path}/invoices`}
-              description="See all your Invoices or create a new one"
-            >
-              Invoices
-            </Item>
-            <Item
-              href={`${path}/payments`}
-              description="Check your confirmed payments"
-            >
-              Payments
-            </Item>
-            <Item
-              href={`${path}/customers`}
-              description="Manage your customer base"
-            >
-              Manage Customers
-            </Item>
-            <Item href={`${path}/users`} description="Manage All Users">
-              Manage Users
-            </Item>
-          </div>
+          <Menu />
         </div>
       </div>
     </>

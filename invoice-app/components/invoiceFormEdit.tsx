@@ -97,6 +97,7 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
       setTimeout(() => {
         setError(false);
         router.push(`/dashboard/invoices/${invoice.id}`);
+        window.location.reload();
       }, 2000);
     } catch (error) {
       console.error("Error updating invoice:", error);
