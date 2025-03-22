@@ -3,22 +3,19 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
-const BackButton: React.FC = () => {
+const BackButtonCustomer: React.FC = () => {
   const path = usePathname();
   let previous = "";
 
   switch (true) {
-    case !!sessionStorage.getItem("previousPage"): // Ensures it's a non-empty string
-      previous = sessionStorage.getItem("previousPage")!;
+    case !!sessionStorage.getItem("previousPageCustomer"): // Ensures it's a non-empty string
+      previous = sessionStorage.getItem("previousPageCustomer")!;
       break;
-    case path?.includes("dashboard/payments"):
-      previous = "payments";
-      break;
-    case path?.includes("dashboard/invoices"):
-      previous = "invoices";
+    case path?.includes("dashboard/customers"):
+      previous = "customers";
       break;
     default:
-      previous = sessionStorage.getItem("previousPage") || "";
+      previous = sessionStorage.getItem("previousPageCustomer") || "";
       break;
   }
 
@@ -37,4 +34,4 @@ const BackButton: React.FC = () => {
   );
 };
 
-export default BackButton;
+export default BackButtonCustomer;

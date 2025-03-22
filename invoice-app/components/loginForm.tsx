@@ -36,9 +36,8 @@ const LoginForm: React.FC = () => {
     } else {
       setLoading(true);
       setTimeout(() => {
-        router.refresh();
         router.push("/dashboard");
-      }, 1000);
+      }, 2000);
     }
   };
 

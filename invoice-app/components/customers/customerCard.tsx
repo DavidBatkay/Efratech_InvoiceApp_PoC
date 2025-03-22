@@ -16,7 +16,7 @@ interface CustomerComponentProps {
 
 const CustomerCard: React.FC<CustomerComponentProps> = ({ customer }) => {
   const handleClick = () => {
-    sessionStorage.setItem("previousPage", "customers");
+    sessionStorage.setItem("previousPageCustomer", "customers");
   };
 
   return (

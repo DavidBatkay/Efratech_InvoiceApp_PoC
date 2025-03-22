@@ -1,6 +1,5 @@
 import { Button } from "../ui/button";
 import Link from "next/link";
-import BackButton from "../buttons/backButton";
 import CustomerDeleteButton from "./customerDeleteButton";
 import {
   Card,
@@ -10,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import BackButtonCustomer from "../buttons/backButtonCustomer";
 
 type Customer = {
   id: number;
@@ -26,7 +26,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({ customer }) => {
   return (
     <>
       <div className="fixed top-26 left-4 sm:top-36 sm:left-32 z-50 rounded-full shadow-emerald-100 shadow-2xl">
-        <BackButton />
+        <BackButtonCustomer />
       </div>
       <Card className="w-72 bg-white shadow-lg rounded-xl p-6 transition-transform hover:scale-105">
         <CardHeader>

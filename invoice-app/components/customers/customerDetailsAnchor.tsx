@@ -14,7 +14,7 @@ const CustomerDetailsAnchor: React.FC<{
   }
 
   const handleClick = () => {
-    sessionStorage.setItem("previousPage", `invoices/${invoice.id}`);
+    sessionStorage.setItem("previousPageCustomer", `invoices/${invoice.id}`);
   };
 
   return (
