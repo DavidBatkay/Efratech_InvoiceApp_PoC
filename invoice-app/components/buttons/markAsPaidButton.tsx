@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { useMarkAsPaidAPI } from "@/app/api/invoices/__calls__/useMarkAsPaidAPI";
 interface MarkAsPaidButtonProps {
   invoiceId: number;
   invoiceStatus: string;
@@ -11,23 +11,19 @@ const MarkAsPaidButton: React.FC<MarkAsPaidButtonProps> = ({
   invoiceId,
   invoiceStatus,
 }) => {
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { markAsPaid } = useMarkAsPaidAPI();
   if (invoiceStatus === "PAID" || invoiceStatus === "ARCHIVED") {
     return null;
   }
 
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
   const handleMarkAsPaid = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/invoices/markAsPaid`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoiceId }),
-      });
+      const response = await markAsPaid(invoiceId);
 
-      if (!response.ok) throw new Error("Failed to update invoice");
+      if (response.error) throw new Error(response.error);
 
       // Optional: Trigger a refresh or state update if needed
       window.location.reload(); // Simple way to reflect changes

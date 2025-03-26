@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import CreateInvoiceButton from "@/components/createInvoice";
 import Invoice from "@/components/invoice";
-
+import { useInvoiceAPI } from "@/app/api/invoices/__calls__/useInvoiceAPI";
 type Invoice = {
   id: number;
   customer: { customerName: string };
@@ -13,27 +13,21 @@ type Invoice = {
   createdAt: Date;
 };
 
-const InvoiceList: React.FC<{
-  userId: number;
-  fetchUrl: string;
-}> = ({ userId, fetchUrl }) => {
+const InvoiceList: React.FC = () => {
   const [invoices, setInvoices] = useState([]);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [filter, setFilter] = useState<
     "all" | "pending" | "overdue" | "paid" | "archived"
   >("all");
-
+  const { fetchInvoices } = useInvoiceAPI();
   useEffect(() => {
-    const fetchInvoices = async () => {
-      const res = await fetch(
-        `${fetchUrl}?sortOrder=${sortOrder}&filter=${filter}`
-      );
-      const data = await res.json();
+    const fetchAllInvoices = async () => {
+      const data = await fetchInvoices(sortOrder, filter);
       setInvoices(data);
     };
 
-    fetchInvoices();
-  }, [userId, sortOrder, fetchUrl, filter]);
+    fetchAllInvoices();
+  }, [sortOrder, filter, fetchInvoices]);
 
   return (
     <div className="w-full">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CustomerSelect from "./customers/customerSelect";
+import { useInvoiceAPI } from "@/app/api/invoices/__calls__/useInvoiceAPI";
 interface Invoice {
   id: number;
   customerId: number | null;
@@ -19,6 +20,7 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
   const [form, setForm] = useState(invoice);
   const [error, setError] = useState(false);
   const [confirmUpdate, setConfirmUpdate] = useState(false);
+  const { updateInvoice } = useInvoiceAPI();
   const isPaid = invoice.status === "PAID";
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -86,13 +88,11 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
         })),
       };
 
-      const response = await fetch(`/api/invoices/${invoice.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedInvoice),
-      });
-
-      if (!response.ok) setError(true);
+      const response = await updateInvoice(invoice.id, updatedInvoice);
+      if (response.error) {
+        setError(true);
+        throw new Error(response.error);
+      }
 
       setTimeout(() => {
         setError(false);

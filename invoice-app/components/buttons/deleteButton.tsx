@@ -2,22 +2,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { useInvoiceAPI } from "@/app/api/invoices/__calls__/useInvoiceAPI";
 const DeleteInvoiceButton: React.FC<{
   invoiceId: number;
   invoiceStatus: string;
 }> = ({ invoiceId, invoiceStatus }) => {
   const [showModal, setShowModal] = useState(false);
+  const { deleteInvoice } = useInvoiceAPI();
   const router = useRouter();
   const paid = invoiceStatus === "PAID";
   const archived = invoiceStatus === "ARCHIVED";
   const handleDelete = async () => {
     try {
-      const response = await fetch("/api/invoices/deleteInvoices", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoiceId }),
-      });
+      const response = await deleteInvoice(invoiceId);
 
       if (!response.ok) throw new Error("Failed to delete invoice");
 
