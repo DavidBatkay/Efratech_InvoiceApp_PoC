@@ -1,7 +1,6 @@
 import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { auth } from "@/lib/auth";
 export async function createInvoice(data: Prisma.InvoiceCreateInput) {
   return await prisma.invoice.create({
     data,
@@ -9,7 +8,7 @@ export async function createInvoice(data: Prisma.InvoiceCreateInput) {
 }
 
 export async function getInvoiceById(id: number) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session || !session.user?.user_id) return null;
   return await prisma.invoice.findFirst({

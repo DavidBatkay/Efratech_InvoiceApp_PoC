@@ -1,4 +1,4 @@
-import NextAuth, { AuthOptions } from "next-auth";
+import { NextAuthOptions, getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
@@ -11,7 +11,7 @@ interface PrismaUser {
   password: string | null;
 }
 
-export const authOptions: AuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -19,6 +19,7 @@ export const authOptions: AuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
+
       authorize: async (credentials) => {
         if (!credentials?.email || !credentials?.password) {
           return null;
@@ -28,39 +29,32 @@ export const authOptions: AuthOptions = {
           where: { email: credentials.email },
         });
 
-        if (!user) {
+        if (!user || !user.password) {
           return null;
         }
 
-        if (!user.password) {
-          return null;
-        }
-
-        // Ensure the comparison is done correctly
         const isValidPassword = await bcrypt.compare(
           credentials.password,
           user.password
         );
         if (!isValidPassword) {
-          return null; // Return null instead of throwing an error
+          return null;
         }
 
         return {
-          id: user.user_id.toString(), // ✅ Ensure user_id is included
+          id: user.user_id.toString(),
           email: user.email,
-          user_id: user.user_id, // 🔥 Pass user_id to NextAuth
+          user_id: user.user_id,
         };
       },
     }),
   ],
   adapter: PrismaAdapter(prisma),
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.user_id = (user as any).user_id; // ✅ Store user_id in the token
+        token.user_id = (user as any).user_id;
       }
       return token;
     },
@@ -69,7 +63,7 @@ export const authOptions: AuthOptions = {
         ...session,
         user: {
           ...session.user,
-          user_id: token.user_id ?? null, // ✅ Include user_id
+          user_id: token.user_id ?? null,
         },
       };
     },
@@ -77,4 +71,7 @@ export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-export default NextAuth(authOptions);
+// Helper function for authentication
+export async function auth() {
+  return await getServerSession(authOptions);
+}

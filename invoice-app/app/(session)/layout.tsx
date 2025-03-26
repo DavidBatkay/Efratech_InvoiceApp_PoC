@@ -3,14 +3,15 @@ import AuthGuard from "@/components/authGuard";
 import Header from "@/components/header";
 import { Suspense } from "react";
 import Loading from "../loading";
-import { SessionProvider, useSession } from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
+import { Session } from "next-auth";
 
 export default function SessionLayout({
   children,
   session, // Accept session as a prop
 }: Readonly<{
   children: React.ReactNode;
-  session?: any;
+  session?: Session;
 }>) {
   return (
     <SessionProvider session={session}>

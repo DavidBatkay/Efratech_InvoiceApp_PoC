@@ -1,8 +1,7 @@
-import { getServerSession } from "next-auth";
 import prisma from "@/lib/prisma";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { auth } from "@/lib/auth";
 export async function getCustomerById(id: number) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session || !session.user?.user_id) return null;
   return await prisma.customer.findFirst({

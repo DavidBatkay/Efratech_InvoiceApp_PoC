@@ -1,19 +1,15 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== "DELETE") {
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
-
+export async function DELETE(req: Request) {
   try {
-    const { invoiceId } = req.body;
+    const { invoiceId } = await req.json();
 
     if (!invoiceId) {
-      return res.status(400).json({ error: "Invoice ID is required" });
+      return NextResponse.json(
+        { error: "Invoice ID is required" },
+        { status: 400 }
+      );
     }
 
     const existingInvoice = await prisma.invoice.findUnique({
@@ -22,7 +18,7 @@ export default async function handler(
     });
 
     if (!existingInvoice) {
-      return res.status(404).json({ error: "Invoice not found" });
+      return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
     }
 
     if (existingInvoice.status === "PAID") {
@@ -31,7 +27,7 @@ export default async function handler(
         where: { id: Number(invoiceId) },
         data: { status: "ARCHIVED", updatedAt: existingInvoice.updatedAt },
       });
-      return res.status(200).json({ message: "Invoice archived successfully" });
+      return NextResponse.json({ message: "Invoice archived successfully" });
     }
 
     if (existingInvoice.status === "ARCHIVED") {
@@ -40,9 +36,7 @@ export default async function handler(
         where: { id: Number(invoiceId) },
         data: { status: "PAID", updatedAt: existingInvoice.updatedAt },
       });
-      return res
-        .status(200)
-        .json({ message: "Invoice unarchived successfully" });
+      return NextResponse.json({ message: "Invoice unarchived successfully" });
     }
 
     // If not PAID or ARCHIVED, delete normally
@@ -50,9 +44,12 @@ export default async function handler(
       where: { id: Number(invoiceId) },
     });
 
-    return res.status(200).json({ message: "Invoice deleted successfully" });
+    return NextResponse.json({ message: "Invoice deleted successfully" });
   } catch (error) {
     console.error("Error deleting invoice:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

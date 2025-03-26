@@ -1,19 +1,12 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "./auth/[...nextauth]";
+import { auth } from "@/lib/auth";
+export async function GET() {
+  const session = await auth(); // Adjust this if needed.
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== "GET") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
-  const session = await getServerSession(req, res, authOptions);
   if (!session || !session.user?.user_id) {
-    return res.status(401).json({ error: "Unauthorized" });
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+    });
   }
 
   const userId = session.user.user_id;
@@ -66,18 +59,23 @@ export default async function handler(
       favoriteCustomerName = customer?.customerName ?? "No data";
     }
 
-    res.status(200).json({
-      totalInvoices: totalInvoices || "No data",
-      pendingInvoices: pendingInvoices || "No data",
-      paidInvoices: paidInvoices || "No data",
-      overdueInvoices: overdueInvoices || "No data",
-      archivedInvoices: archivedInvoices || "No data",
-      totalCustomers: totalCustomers || "No data",
-      totalRevenue: totalRevenue._sum.totalValue || "No data",
-      totalOutstanding: totalOutstanding._sum.totalValue || "No data",
-      favoriteCustomer: favoriteCustomerName,
-    });
+    return new Response(
+      JSON.stringify({
+        totalInvoices: totalInvoices || "No data",
+        pendingInvoices: pendingInvoices || "No data",
+        paidInvoices: paidInvoices || "No data",
+        overdueInvoices: overdueInvoices || "No data",
+        archivedInvoices: archivedInvoices || "No data",
+        totalCustomers: totalCustomers || "No data",
+        totalRevenue: totalRevenue._sum.totalValue || "No data",
+        totalOutstanding: totalOutstanding._sum.totalValue || "No data",
+        favoriteCustomer: favoriteCustomerName,
+      }),
+      { status: 200 }
+    );
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+    });
   }
 }

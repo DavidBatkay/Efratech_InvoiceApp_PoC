@@ -13,7 +13,7 @@ const DeleteInvoiceButton: React.FC<{
   const archived = invoiceStatus === "ARCHIVED";
   const handleDelete = async () => {
     try {
-      const response = await fetch("/api/deleteInvoices", {
+      const response = await fetch("/api/invoices/deleteInvoices", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ invoiceId }),

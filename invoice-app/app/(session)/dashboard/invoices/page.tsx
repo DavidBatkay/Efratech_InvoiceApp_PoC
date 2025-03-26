@@ -1,10 +1,9 @@
-import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { auth } from "@/lib/auth";
 import InvoiceList from "@/components/invoiceList";
 
 const InvoicePage: React.FC = async () => {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session) return notFound();
 
   return (
