@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import CreateInvoiceButton from "@/components/createInvoice";
 import Invoice from "@/components/invoice";
-import { useInvoiceAPI } from "@/app/api/invoices/__calls__/useInvoiceAPI";
+import { useInvoiceAPI } from "@/app/api/__calls__/useInvoiceAPI";
 type Invoice = {
   id: number;
   customer: { customerName: string };

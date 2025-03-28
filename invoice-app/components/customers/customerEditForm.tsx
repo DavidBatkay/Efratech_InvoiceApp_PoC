@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
+import { useCustomerAPI } from "@/app/api/__calls__/useCustomerAPI";
 const CustomerEditForm: React.FC<{
   customer: { id: number; customerName: string; email: string };
 }> = ({ customer }) => {
@@ -12,7 +12,7 @@ const CustomerEditForm: React.FC<{
     email: customer.email || "",
   });
   const [showModal, setShowModal] = useState(false);
-
+  const { updateCustomer } = useCustomerAPI();
   useEffect(() => {
     setForm({ customerName: customer.customerName, email: customer.email });
   }, [customer]);
@@ -36,13 +36,9 @@ const CustomerEditForm: React.FC<{
     }
 
     try {
-      const response = await fetch(`/api/customers/${customer.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const response = await updateCustomer(customer.id, form);
 
-      if (!response.ok) throw new Error("Failed to update customer");
+      if (response.error) throw new Error(response.error);
 
       setShowModal(true);
 

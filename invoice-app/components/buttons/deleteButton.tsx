@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useInvoiceAPI } from "@/app/api/invoices/__calls__/useInvoiceAPI";
+import { useInvoiceAPI } from "@/app/api/__calls__/useInvoiceAPI";
 const DeleteInvoiceButton: React.FC<{
   invoiceId: number;
   invoiceStatus: string;

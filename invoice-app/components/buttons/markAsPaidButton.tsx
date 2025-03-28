@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMarkAsPaidAPI } from "@/app/api/invoices/__calls__/useMarkAsPaidAPI";
+import { useInvoiceAPI } from "@/app/api/__calls__/useInvoiceAPI";
 interface MarkAsPaidButtonProps {
   invoiceId: number;
   invoiceStatus: string;
@@ -13,7 +13,7 @@ const MarkAsPaidButton: React.FC<MarkAsPaidButtonProps> = ({
 }) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { markAsPaid } = useMarkAsPaidAPI();
+  const { markAsPaid } = useInvoiceAPI();
   if (invoiceStatus === "PAID" || invoiceStatus === "ARCHIVED") {
     return null;
   }

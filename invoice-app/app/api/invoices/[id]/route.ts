@@ -2,11 +2,11 @@ import prisma from "@/lib/prisma";
 import { LineItem } from "@prisma/client";
 import { auth } from "@/lib/auth";
 
-export async function PUT(
+export async function GET(
   req: Request,
   { params }: { params: { id: string } }
-) {
-  const { id } = params; // Access the invoice ID from params
+): Promise<Response> {
+  const { id } = params;
   const session = await auth();
 
   if (!id) {
@@ -16,7 +16,49 @@ export async function PUT(
   }
 
   try {
-    // Check for the existing invoice
+    const invoice = await prisma.invoice.findFirst({
+      where: { id: Number(id), user_id: session?.user?.user_id },
+      include: { lineItems: true, customer: true },
+    });
+
+    if (!invoice) {
+      return new Response(JSON.stringify({ error: "Invoice not found" }), {
+        status: 404,
+      });
+    }
+    const invoiceWithDates = {
+      ...invoice,
+      lineItems: invoice.lineItems, // Ensure lineItems is still included
+      dateOfCreation: invoice.dateOfCreation
+        ? new Date(invoice.dateOfCreation)
+        : null,
+      dueDate: invoice.dueDate ? new Date(invoice.dueDate) : null,
+      createdAt: invoice.createdAt ? new Date(invoice.createdAt) : null,
+      updatedAt: invoice.updatedAt ? new Date(invoice.updatedAt) : null,
+    };
+    return new Response(JSON.stringify(invoiceWithDates), { status: 200 });
+  } catch (error) {
+    console.error("Error fetching invoice:", error);
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+      status: 500,
+    });
+  }
+}
+
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
+  const session = await auth();
+
+  if (!id) {
+    return new Response(JSON.stringify({ error: "Invalid invoice ID" }), {
+      status: 400,
+    });
+  }
+
+  try {
     const existingInvoice = await prisma.invoice.findUnique({
       where: { id: Number(id) },
     });
@@ -53,7 +95,6 @@ export async function PUT(
       });
     }
 
-    // Update the invoice
     const updatedInvoice = await prisma.invoice.update({
       where: { id: Number(id) },
       data: {
@@ -68,7 +109,7 @@ export async function PUT(
         status,
         notes: notes || null,
         lineItems: {
-          deleteMany: {}, // Clears old line items
+          deleteMany: {},
           create: lineItems.map((item: LineItem) => ({
             description: item.description,
             quantity: item.quantity,
@@ -87,4 +128,4 @@ export async function PUT(
   }
 }
 
-export const dynamic = "force-static"; // Optional to ensure caching behavior
+export const dynamic = "force-static";

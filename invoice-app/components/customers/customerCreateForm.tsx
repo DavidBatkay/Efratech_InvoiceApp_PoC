@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { useCustomerAPI } from "@/app/api/__calls__/useCustomerAPI";
 const CustomerCreateForm: React.FC = () => {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -10,6 +10,9 @@ const CustomerCreateForm: React.FC = () => {
     email: "",
   });
   const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { createCustomer } = useCustomerAPI();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,14 +28,10 @@ const CustomerCreateForm: React.FC = () => {
     }
 
     try {
-      const response = await fetch("/api/customers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      if (!response.ok) throw new Error("Failed to create customer");
-
+      const response = await createCustomer(form);
+      if (response.error) {
+        throw new Error(response.error || "Failed to create customer");
+      }
       setShowModal(true);
 
       setTimeout(() => {
@@ -40,7 +39,17 @@ const CustomerCreateForm: React.FC = () => {
         router.push("/dashboard/customers");
       }, 2000);
     } catch (error) {
-      console.error("Error creating customer:", error);
+      if (error instanceof Error) {
+        setError(error.message); // Set error message from API
+      } else {
+        setError("An unexpected error occurred.");
+      }
+      setShowModal(true);
+
+      setTimeout(() => {
+        setShowModal(false);
+        setError(null);
+      }, 2000);
     }
   };
 
@@ -101,6 +110,16 @@ const CustomerCreateForm: React.FC = () => {
               Customer Created!
             </h2>
             <p className="text-gray-700">You will be redirected shortly...</p>
+          </div>
+        </div>
+      )}
+      {error && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h2 className="text-xl font-semibold text-red-600">
+              Error creating customer!
+            </h2>
+            <p className="text-gray-700">{error}</p>
           </div>
         </div>
       )}

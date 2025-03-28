@@ -3,18 +3,29 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CustomerSelect from "./customers/customerSelect";
-import { useInvoiceAPI } from "@/app/api/invoices/__calls__/useInvoiceAPI";
-interface Invoice {
+import { useInvoiceAPI } from "@/app/api/__calls__/useInvoiceAPI";
+import { Customer } from "@prisma/client";
+type LineItem = {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+};
+type Invoice = {
   id: number;
-  customerId: number | null;
-  totalValue: number;
+  customer?: Customer | null;
+  customerId: number | null; // New field
+  customerName: string | null; // New field
+  customerEmail: string | null; // New field
+  dateOfCreation: Date;
   invoiceNumber: string;
   dueDate: Date;
   status: string;
-  notes: string | null;
-  lineItems: { description: string; quantity: number; unitPrice: number }[];
-}
-
+  notes?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  totalValue: number;
+  lineItems: LineItem[];
+};
 const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
   const router = useRouter();
   const [form, setForm] = useState(invoice);

@@ -3,24 +3,24 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
+import { useCustomerAPI } from "@/app/api/__calls__/useCustomerAPI";
 const CustomerDeleteButton: React.FC<{ customerId: number }> = ({
   customerId,
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [message, setMessage] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const { deleteCustomer } = useCustomerAPI();
   const router = useRouter();
   const handleDelete = async () => {
     setIsDeleting(true);
     setMessage(""); // Reset message
 
     try {
-      const response = await fetch(`/api/customers/${customerId}`, {
-        method: "DELETE",
-      });
+      const response = await deleteCustomer(customerId);
 
-      if (!response.ok) {
-        throw new Error("Failed to delete customer");
+      if (response.error) {
+        throw new Error(response.error);
       }
 
       setMessage("Customer deleted successfully!");
@@ -51,9 +51,6 @@ const CustomerDeleteButton: React.FC<{ customerId: number }> = ({
                 <h2 className="text-lg font-semibold text-gray-800">
                   {message}
                 </h2>
-                <Button className="mt-4" onClick={() => setShowModal(false)}>
-                  Close
-                </Button>
               </>
             ) : (
               <>

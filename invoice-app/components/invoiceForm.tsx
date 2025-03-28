@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CustomerSelect from "./customers/customerSelect";
+import { useInvoiceAPI } from "@/app/api/__calls__/useInvoiceAPI";
 const InvoiceFormComponent: React.FC = () => {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -18,6 +19,7 @@ const InvoiceFormComponent: React.FC = () => {
   });
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const { createInvoice } = useInvoiceAPI();
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -91,17 +93,10 @@ const InvoiceFormComponent: React.FC = () => {
           unitPrice: Number(item.unitPrice),
         })),
       };
+      const response = await createInvoice(invoiceData);
 
-      const response = await fetch("/api/invoices", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(invoiceData),
-      });
-
-      const data = await response.json(); // Convert response to JSON
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to create invoice"); // Use API error message
+      if (response.error) {
+        throw new Error(response.error || "Failed to create invoice"); // Use API error message
       }
 
       setShowModal(true);
