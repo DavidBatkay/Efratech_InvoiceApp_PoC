@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import CustomerDeleteButton from "./customerDeleteButton";
@@ -10,6 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import BackButtonCustomer from "../buttons/backButtonCustomer";
+import { useEffect, useState } from "react";
+import { useCustomerAPI } from "@/app/api/__calls__/useCustomerAPI";
 
 type Customer = {
   id: number;
@@ -18,11 +21,31 @@ type Customer = {
   createdAt: Date;
 };
 
-interface CustomerDetailsProps {
-  customer: Customer;
-}
+const CustomerDetails: React.FC<{ customerId: string }> = ({ customerId }) => {
+  const { fetchCustomer } = useCustomerAPI();
+  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-const CustomerDetails: React.FC<CustomerDetailsProps> = ({ customer }) => {
+  useEffect(() => {
+    const handleFetchCustomer = async () => {
+      setLoading(true);
+      const data = await fetchCustomer(Number(customerId));
+
+      if (data.error) {
+        setError("Failed to load customer");
+      } else {
+        setCustomer(data);
+      }
+      setLoading(false);
+    };
+
+    handleFetchCustomer();
+  }, [customerId, fetchCustomer]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error || !customer) return <p>{error || "Customer not found"}</p>;
+
   return (
     <>
       <div className="fixed top-26 left-4 sm:top-36 sm:left-32 z-50 rounded-full shadow-emerald-100 shadow-2xl">

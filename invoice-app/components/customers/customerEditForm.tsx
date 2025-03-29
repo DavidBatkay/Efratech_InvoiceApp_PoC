@@ -3,28 +3,47 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCustomerAPI } from "@/app/api/__calls__/useCustomerAPI";
-const CustomerEditForm: React.FC<{
-  customer: { id: number; customerName: string; email: string };
-}> = ({ customer }) => {
+
+type Customer = {
+  id: number;
+  email: string;
+  customerName: string;
+};
+
+const CustomerEditForm: React.FC<{ customerId: string }> = ({ customerId }) => {
   const router = useRouter();
-  const [form, setForm] = useState({
-    customerName: customer.customerName || "",
-    email: customer.email || "",
-  });
+  const { fetchCustomer, updateCustomer } = useCustomerAPI();
+  const [form, setForm] = useState({ customerName: "", email: "" });
+  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const { updateCustomer } = useCustomerAPI();
+
   useEffect(() => {
-    setForm({ customerName: customer.customerName, email: customer.email });
-  }, [customer]);
+    const loadCustomer = async () => {
+      setLoading(true);
+      const data = await fetchCustomer(Number(customerId));
+
+      if (data.error) {
+        setError("Failed to load customer");
+      } else {
+        setCustomer(data);
+        setForm({ customerName: data.customerName, email: data.email });
+      }
+      setLoading(false);
+    };
+
+    loadCustomer();
+  }, [customerId, fetchCustomer]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
-  const handleCancel = async (e: React.FormEvent) => {
+  const handleCancel = (e: React.FormEvent) => {
     e.preventDefault();
-    router.replace(`/dashboard/customers/${customer.id}`);
+    router.replace(`/dashboard/customers/${customerId}`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,12 +55,10 @@ const CustomerEditForm: React.FC<{
     }
 
     try {
-      const response = await updateCustomer(customer.id, form);
-
+      const response = await updateCustomer(Number(customerId), form);
       if (response.error) throw new Error(response.error);
 
       setShowModal(true);
-
       setTimeout(() => {
         setShowModal(false);
         router.push("/dashboard/customers");
@@ -50,6 +67,9 @@ const CustomerEditForm: React.FC<{
       console.error("Error updating customer:", error);
     }
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error || !customer) return <p>{error || "Customer not found"}</p>;
 
   return (
     <div className="flex flex-col min-h-screen justify-center items-center bg-inherit py-10">
@@ -86,7 +106,7 @@ const CustomerEditForm: React.FC<{
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Submit & Cancel Buttons */}
           <div className="mt-6 flex justify-between gap-4">
             <button
               type="submit"

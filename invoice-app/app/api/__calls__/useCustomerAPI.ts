@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 export function useCustomerAPI() {
   const createCustomer = async (form: {
     customerName: string;
@@ -60,5 +62,39 @@ export function useCustomerAPI() {
       return { error: errorMessage };
     }
   };
-  return { createCustomer, deleteCustomer, updateCustomer };
+  const fetchCustomers = useCallback(
+    async (sortBy?: string, sortOrder?: string) => {
+      const url =
+        sortBy && sortOrder
+          ? `/api/customers?orderBy=${sortBy}&order=${sortOrder}`
+          : `/api/customers`;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Failed to fetch customers");
+        const data = await res.json();
+        return data;
+      } catch (error) {
+        return { error };
+      }
+    },
+    []
+  );
+  const fetchCustomer = useCallback(async (id: number) => {
+    try {
+      const res = await fetch(`/api/customers/${id}`);
+      if (!res.ok) throw new Error("Failed to fetch customer");
+      return await res.json();
+    } catch (error) {
+      return { error };
+    }
+  }, []);
+
+  return {
+    createCustomer,
+    deleteCustomer,
+    updateCustomer,
+    fetchCustomers,
+    fetchCustomer,
+  };
 }
+//NOTE fetchCustomers and fetchCustomer remaining

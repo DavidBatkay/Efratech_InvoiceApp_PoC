@@ -7,6 +7,7 @@ import {
 } from "../ui/select";
 import { useState, useEffect } from "react";
 import { Customer } from "@prisma/client";
+import { useCustomerAPI } from "@/app/api/__calls__/useCustomerAPI";
 interface CustomerSelectProps {
   setCustomerId: (id: string) => void;
   selectedCustomerId?: string | null; // Make it optional
@@ -22,20 +23,20 @@ const CustomerSelect: React.FC<CustomerSelectProps> = ({
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(
     selectedCustomerId || null
   );
-
+  const { fetchCustomers } = useCustomerAPI();
   useEffect(() => {
-    const fetchCustomers = async () => {
+    const handleFetchCustomers = async () => {
       try {
-        const response = await fetch("/api/customers");
-        const data = await response.json();
+        const data = await fetchCustomers();
+        if (data.error) throw new Error(data.error);
         setCustomers(data);
       } catch (error) {
         console.error("Error fetching customers:", error);
       }
     };
 
-    fetchCustomers();
-  }, []);
+    handleFetchCustomers();
+  }, [fetchCustomers]);
 
   // Sync with prop changes
   useEffect(() => {

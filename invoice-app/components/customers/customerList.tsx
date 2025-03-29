@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import CustomerCard from "./customerCard";
 import { Button } from "@/components/ui/button";
 import CreateCustomerButton from "./createCustomerButton";
+import { useCustomerAPI } from "@/app/api/__calls__/useCustomerAPI";
 interface Customer {
   id: string;
   customerName: string;
@@ -17,23 +18,20 @@ const CustomerList: React.FC = () => {
     "createdAt"
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
+  const { fetchCustomers } = useCustomerAPI();
   useEffect(() => {
-    const fetchCustomers = async () => {
+    const handleFetchCustomers = async () => {
       try {
-        const res = await fetch(
-          `/api/customers?orderBy=${sortBy}&order=${sortOrder}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch customers");
-        const data = await res.json();
+        const data = await fetchCustomers(sortBy, sortOrder);
+        if (data.error) throw new Error(data.error);
         setCustomers(data);
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchCustomers();
-  }, [sortBy, sortOrder]);
+    handleFetchCustomers();
+  }, [sortBy, sortOrder, fetchCustomers]);
 
   return (
     <div>
