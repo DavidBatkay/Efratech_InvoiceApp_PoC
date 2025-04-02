@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Button from "@/components/buttons/button";
+import { useUserAPI } from "@/app/api/__calls__/useUserAPI";
 
 type User = {
   user_id: number;
@@ -11,30 +12,20 @@ type User = {
 };
 
 const UsersList: React.FC = () => {
+  const { fetchUsers } = useUserAPI();
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [sortBy, setSortBy] = useState<"email" | "createdAt">("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch(
-          `/api/users?email=${encodeURIComponent(
-            search
-          )}&sortBy=${sortBy}&order=${sortOrder}` // Change 'sortOrder' to 'order'
-        );
-        if (!res.ok) throw new Error("Failed to fetch users");
-
-        const data: User[] = await res.json();
-        setUsers(data);
-      } catch (error) {
-        console.error(error);
-      }
+    const getUsers = async () => {
+      const data = await fetchUsers(search, sortBy, sortOrder);
+      setUsers(data);
     };
 
-    fetchUsers();
-  }, [search, sortBy, sortOrder]);
+    getUsers();
+  }, [search, sortBy, sortOrder, fetchUsers]);
 
   return (
     <div className="flex flex-col min-h-screen items-center p-4">

@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
+import { useUserAPI } from "@/app/api/__calls__/useUserAPI";
 type User = {
-  user_id: string;
+  user_id: number;
   email: string;
   name?: string;
   createdAt?: string;
@@ -26,13 +26,12 @@ const UserCard = () => {
   const [newName, setNewName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch("/api/user");
-        if (!res.ok) throw new Error("Failed to fetch user");
+  const { updateUser, fetchUser } = useUserAPI(); // Get the updateUser function from the hook
 
-        const data: User = await res.json();
+  useEffect(() => {
+    const handleFetchUser = async () => {
+      try {
+        const data: User = await fetchUser();
         setUser(data);
         setNewName(data.name || ""); // Set initial name
       } catch (error) {
@@ -42,21 +41,13 @@ const UserCard = () => {
       }
     };
 
-    fetchUser();
-  }, []);
+    handleFetchUser();
+  }, [fetchUser]);
 
   const handleSave = async () => {
     if (!user) return;
     try {
-      const res = await fetch("/api/user", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newName }),
-      });
-      const data = await res.json();
-      if (!res.ok)
-        throw new Error(`${data.error}` || "Failed to update username");
-
+      await updateUser(newName);
       setUser((prev) => (prev ? { ...prev, name: newName } : null));
       setIsEditing(false);
     } catch (error) {
