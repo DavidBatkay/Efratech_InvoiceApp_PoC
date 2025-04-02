@@ -3,29 +3,27 @@
 import Menu from "@/components/dashboard/menu";
 import { useEffect, useState } from "react";
 import Statistics from "@/components/dashboard/statistics";
+import { useUserAPI } from "@/app/api/__calls__/useUserAPI";
 type User = {
-  user_id: string;
+  user_id: number;
   name?: string;
 };
 
 const DashBoard: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
-
+  const { fetchUser } = useUserAPI();
   useEffect(() => {
-    const fetchUser = async () => {
+    const handleFetchUser = async () => {
       try {
-        const res = await fetch("/api/user");
-        if (!res.ok) throw new Error("Failed to fetch user");
-
-        const data: User = await res.json();
+        const data: User = await fetchUser();
         setUser(data);
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchUser();
-  }, []);
+    handleFetchUser();
+  }, [fetchUser]);
 
   return (
     <>
