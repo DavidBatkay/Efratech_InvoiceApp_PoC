@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useStatsAPI } from "@/app/api/__calls__/useStatsAPI";
 
 interface StatisticsData {
   totalInvoices: number | string;
@@ -17,22 +18,19 @@ interface StatisticsData {
 
 const Statistics = () => {
   const [stats, setStats] = useState<StatisticsData | null>(null);
-
+  const { fetchStats } = useStatsAPI();
   useEffect(() => {
-    const fetchStats = async () => {
+    const handleFetchStats = async () => {
       try {
-        const res = await fetch("/api/stats");
-        if (!res.ok) throw new Error("Failed to fetch statistics");
-
-        const data: StatisticsData = await res.json();
+        const data: StatisticsData = await fetchStats();
         setStats(data);
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchStats();
-  }, []);
+    handleFetchStats();
+  }, [fetchStats]);
 
   if (!stats)
     return (
