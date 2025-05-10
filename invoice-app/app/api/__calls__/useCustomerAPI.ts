@@ -97,4 +97,3 @@ export function useCustomerAPI() {
     fetchCustomer,
   };
 }
-//NOTE fetchCustomers and fetchCustomer remaining

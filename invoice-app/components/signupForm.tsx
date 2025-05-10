@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChangeEvent, useState } from "react";
-import { createUser } from "@/dao/user.dao";
+import { useUserAPI } from "@/app/api/__calls__/useUserAPI";
 import { useRouter } from "next/navigation";
 import bcrypt from "bcryptjs";
 
@@ -13,7 +13,7 @@ const SignupForm: React.FC = () => {
   const [confirmPassword, setConfirmEmail] = useState("");
   const [success, setSuccess] = useState(false);
   const router = useRouter();
-
+  const { createUser } = useUserAPI();
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
@@ -36,7 +36,7 @@ const SignupForm: React.FC = () => {
     } else {
       try {
         const encryptedPassword = await bcrypt.hash(password, 10);
-        await createUser({ email, password: encryptedPassword });
+        await createUser(email, encryptedPassword);
         //NOTE No error = Successful login
 
         setSuccess(true);

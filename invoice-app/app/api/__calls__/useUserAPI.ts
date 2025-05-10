@@ -56,5 +56,31 @@ export function useUserAPI() {
     }
   }, []);
 
-  return { fetchUsers, updateUser, fetchUser };
+  const createUser = useCallback(
+    async (email: string, password: string, name?: string) => {
+      try {
+        const res = await fetch("/api/user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password, name }),
+        });
+
+        if (!res.ok) {
+          const { error } = await res.json();
+          throw new Error(error || "Failed to create user");
+        }
+
+        const data = await res.json();
+        return data;
+      } catch (error) {
+        console.error("Error creating user:", error);
+        throw error;
+      }
+    },
+    []
+  );
+
+  return { createUser, fetchUsers, updateUser, fetchUser };
 }
