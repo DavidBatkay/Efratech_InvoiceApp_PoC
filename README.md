@@ -21,7 +21,7 @@ It highlights:
 ## 🛠️ Tech Stack
 
 ### 🔧 Backend
-- **Next.js (App Router + Pages API)** – SSR frontend + API endpoints
+- **Next.js (App Router)** – SSR frontend + API endpoints
 - **Prisma ORM** – Type-safe database queries
 - **SQLite3** – Relational database
 - **NextAuth** – Authentication using JWT & PrismaAdapter
