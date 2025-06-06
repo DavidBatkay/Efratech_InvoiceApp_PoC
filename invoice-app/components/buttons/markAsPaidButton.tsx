@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useInvoiceAPI } from "@/app/api/__calls__/useInvoiceAPI";
+import { InvoiceStatus } from "@prisma/client";
 interface MarkAsPaidButtonProps {
   invoiceId: number;
-  invoiceStatus: string;
+  invoiceStatus: InvoiceStatus;
 }
 
 const MarkAsPaidButton: React.FC<MarkAsPaidButtonProps> = ({
@@ -14,7 +15,10 @@ const MarkAsPaidButton: React.FC<MarkAsPaidButtonProps> = ({
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { markAsPaid } = useInvoiceAPI();
-  if (invoiceStatus === "PAID" || invoiceStatus === "ARCHIVED") {
+  if (
+    invoiceStatus === InvoiceStatus.PAID ||
+    invoiceStatus === InvoiceStatus.ARCHIVED
+  ) {
     return null;
   }
 

@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { InvoiceStatus } from "@prisma/client";
 
 export async function PUT(req: Request) {
   try {
@@ -22,8 +23,8 @@ export async function PUT(req: Request) {
     }
 
     if (
-      existingInvoice.status !== "PENDING" &&
-      existingInvoice.status !== "OVERDUE"
+      existingInvoice.status !== InvoiceStatus.PENDING &&
+      existingInvoice.status !== InvoiceStatus.OVERDUE
     ) {
       return new Response(
         JSON.stringify({

@@ -6,8 +6,15 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+  ARCHIVED
 }
 
 model Invoice {
@@ -21,7 +28,7 @@ model Invoice {
   totalValue     Float
   invoiceNumber  String     @unique
   dueDate        DateTime
-  status         String
+  status         InvoiceStatus
   lineItems      LineItem[]
   notes          String?
   createdAt      DateTime   @default(now())

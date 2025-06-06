@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import CreateInvoiceButton from "@/components/createInvoice";
 import Invoice from "@/components/invoice";
 import { useInvoiceAPI } from "@/app/api/__calls__/useInvoiceAPI";
+import { InvoiceStatus } from "@prisma/client";
 type Invoice = {
   id: number;
   customer: { customerName: string };
   customerName: string;
   totalValue: number;
-  status: string;
+  status: InvoiceStatus;
   createdAt: Date;
 };
 

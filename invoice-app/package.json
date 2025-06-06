@@ -28,6 +28,7 @@
     "next-auth": "^4.24.10",
     "node-cron": "^3.0.3",
     "postgres": "^3.4.4",
+    "psql": "^0.0.1",
     "react": "^18",
     "react-dom": "^18",
     "sqlite3": "^5.1.7",

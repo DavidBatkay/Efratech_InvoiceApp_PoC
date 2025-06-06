@@ -5,7 +5,7 @@ import EditButton from "./buttons/editButton";
 import DeleteInvoiceButton from "./buttons/deleteButton";
 import MarkAsPaidButton from "./buttons/markAsPaidButton";
 import CustomerDetailsAnchor from "./customers/customerDetailsAnchor";
-import { Customer } from "@prisma/client";
+import { Customer, InvoiceStatus } from "@prisma/client";
 type LineItem = {
   id: number;
   description: string;
@@ -23,7 +23,7 @@ type Invoice = {
   dateOfCreation: Date;
   invoiceNumber: string;
   dueDate: Date;
-  status: string;
+  status: InvoiceStatus;
   notes?: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -87,16 +87,16 @@ const InvoiceComponent: React.FC<{ invoiceId: string }> = ({ invoiceId }) => {
                   <p className="font-semibold text-right">Status:</p>
                   <span
                     className={`px-2 py-1 rounded-full ${
-                      invoice.status === "PAID"
+                      invoice.status === InvoiceStatus.PAID
                         ? "bg-green-100 text-green-600"
-                        : invoice.status === "PENDING"
+                        : invoice.status === InvoiceStatus.PENDING
                         ? "bg-yellow-100 text-yellow-600"
-                        : invoice.status === "ARCHIVED"
+                        : invoice.status === InvoiceStatus.ARCHIVED
                         ? "bg-blue-100 text-blue-600"
                         : "bg-red-100 text-red-600"
                     }`}
                   >
-                    {invoice.status === "ARCHIVED"
+                    {invoice.status === InvoiceStatus.ARCHIVED
                       ? "PAID & ARCHIVED"
                       : invoice.status}
                   </span>

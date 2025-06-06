@@ -2,7 +2,7 @@
 import { useInvoiceAPI } from "@/app/api/__calls__/useInvoiceAPI";
 import InvoiceFormEdit from "@/components/invoiceFormEdit";
 import { useEffect, useState } from "react";
-import { Customer } from "@prisma/client";
+import { Customer, InvoiceStatus } from "@prisma/client";
 
 type LineItem = {
   id: number;
@@ -21,7 +21,7 @@ type Invoice = {
   dateOfCreation: Date;
   invoiceNumber: string;
   dueDate: Date;
-  status: string;
+  status: InvoiceStatus;
   notes?: string | null;
   createdAt: Date;
   updatedAt: Date;

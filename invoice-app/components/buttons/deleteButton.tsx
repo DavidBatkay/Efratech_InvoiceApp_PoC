@@ -3,15 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useInvoiceAPI } from "@/app/api/__calls__/useInvoiceAPI";
+import { InvoiceStatus } from "@prisma/client";
 const DeleteInvoiceButton: React.FC<{
   invoiceId: number;
-  invoiceStatus: string;
+  invoiceStatus: InvoiceStatus;
 }> = ({ invoiceId, invoiceStatus }) => {
   const [showModal, setShowModal] = useState(false);
   const { deleteInvoice } = useInvoiceAPI();
   const router = useRouter();
-  const paid = invoiceStatus === "PAID";
-  const archived = invoiceStatus === "ARCHIVED";
+  const paid = invoiceStatus === InvoiceStatus.PAID;
+  const archived = invoiceStatus === InvoiceStatus.ARCHIVED;
   const handleDelete = async () => {
     try {
       const response = await deleteInvoice(invoiceId);

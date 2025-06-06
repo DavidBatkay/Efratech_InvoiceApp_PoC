@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { InvoiceStatus, PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -40,7 +40,7 @@ const initialInvoices = [
     totalValue: 5000.0,
     invoiceNumber: "INV-2024-001",
     dueDate: new Date("2024-11-30"),
-    status: "PENDING",
+    status: InvoiceStatus.PENDING,
     notes: "Payment due within 30 days",
     lineItems: [
       { description: "Web Development Services", quantity: 50, unitPrice: 100 },
@@ -52,7 +52,7 @@ const initialInvoices = [
     totalValue: 1500.0,
     invoiceNumber: "INV-2024-002",
     dueDate: new Date("2024-12-15"),
-    status: "PAID",
+    status: InvoiceStatus.PAID,
     notes: "Paid on time",
     lineItems: [
       { description: "SEO Services", quantity: 10, unitPrice: 100 },
@@ -138,7 +138,7 @@ const seed = async () => {
 
   // Create payments for paid invoices
   for (const invoice of invoices) {
-    if (invoice.status === "PAID") {
+    if (invoice.status === InvoiceStatus.PAID) {
       await prisma.payment.create({
         data: {
           invoiceId: invoice.id,

@@ -1,3 +1,4 @@
+import { InvoiceStatus } from "@prisma/client";
 import Button from "./button";
 const EditButton: React.FC<{ invoiceId: number; invoiceStatus: string }> = ({
   invoiceId,
@@ -5,7 +6,9 @@ const EditButton: React.FC<{ invoiceId: number; invoiceStatus: string }> = ({
 }) => {
   let fromColor = "from-amber-400";
   let toColor = "to-amber-600";
-  const paid = invoiceStatus === "PAID" || invoiceStatus === "ARCHIVED";
+  const paid =
+    invoiceStatus === InvoiceStatus.PAID ||
+    invoiceStatus === InvoiceStatus.ARCHIVED;
   if (paid) {
     fromColor = "from-gray-400 cursor-not-allowed";
     toColor = "to-gray-600";

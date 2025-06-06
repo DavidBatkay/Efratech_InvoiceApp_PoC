@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { LineItem } from "@prisma/client";
+import { InvoiceStatus, LineItem } from "@prisma/client";
 import { auth } from "@/lib/auth";
 
 export async function GET(
@@ -70,8 +70,8 @@ export async function PUT(
     }
 
     if (
-      existingInvoice.status === "PAID" ||
-      existingInvoice.status === "ARCHIVED"
+      existingInvoice.status === InvoiceStatus.PAID ||
+      existingInvoice.status === InvoiceStatus.ARCHIVED
     ) {
       return new Response(
         JSON.stringify({ error: "Paid or Archived invoices cannot be edited" }),

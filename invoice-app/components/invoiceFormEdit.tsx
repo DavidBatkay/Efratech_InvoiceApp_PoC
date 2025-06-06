@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CustomerSelect from "./customers/customerSelect";
 import { useInvoiceAPI } from "@/app/api/__calls__/useInvoiceAPI";
-import { Customer } from "@prisma/client";
+import { Customer, InvoiceStatus } from "@prisma/client";
 type LineItem = {
   description: string;
   quantity: number;
@@ -19,7 +19,7 @@ type Invoice = {
   dateOfCreation: Date;
   invoiceNumber: string;
   dueDate: Date;
-  status: string;
+  status: InvoiceStatus;
   notes?: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -32,7 +32,7 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
   const [error, setError] = useState(false);
   const [confirmUpdate, setConfirmUpdate] = useState(false);
   const { updateInvoice } = useInvoiceAPI();
-  const isPaid = invoice.status === "PAID";
+  const isPaid = invoice.status === InvoiceStatus.PAID;
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -90,7 +90,10 @@ const InvoiceFormEdit: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
         totalValue: calculateTotalValue(),
         invoiceNumber: form.invoiceNumber,
         dueDate: new Date(form.dueDate).toISOString(), // Ensure it's a valid date
-        status: new Date(form.dueDate) < new Date() ? "OVERDUE" : "PENDING",
+        status:
+          new Date(form.dueDate) < new Date()
+            ? InvoiceStatus.OVERDUE
+            : InvoiceStatus.PENDING,
         notes: form.notes || null,
         lineItems: form.lineItems.map((item) => ({
           description: item.description,

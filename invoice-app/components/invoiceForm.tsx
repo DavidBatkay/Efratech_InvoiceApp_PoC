@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CustomerSelect from "./customers/customerSelect";
 import { useInvoiceAPI } from "@/app/api/__calls__/useInvoiceAPI";
+import { InvoiceStatus } from "@prisma/client";
 const InvoiceFormComponent: React.FC = () => {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -13,7 +14,7 @@ const InvoiceFormComponent: React.FC = () => {
       .toString()
       .slice(-6)}-${Math.floor(Math.random() * 1000)}`,
     dueDate: "",
-    status: "PENDING",
+    status: InvoiceStatus.PENDING,
     notes: "",
     lineItems: [{ description: "", quantity: "", unitPrice: "" }],
   });
@@ -85,7 +86,10 @@ const InvoiceFormComponent: React.FC = () => {
         totalValue: calculateTotalValue(),
         invoiceNumber: form.invoiceNumber,
         dueDate: form.dueDate,
-        status: new Date(form.dueDate) < new Date() ? "OVERDUE" : "PENDING",
+        status:
+          new Date(form.dueDate) < new Date()
+            ? InvoiceStatus.OVERDUE
+            : InvoiceStatus.PENDING,
         notes: form.notes || null,
         lineItems: form.lineItems.map((item) => ({
           ...item,

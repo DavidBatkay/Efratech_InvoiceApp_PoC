@@ -1,10 +1,11 @@
+import { InvoiceStatus } from "@prisma/client";
 import Button from "./buttons/button";
 
 interface InvoiceProps {
   invoiceId: string;
   invoiceTitle: string;
   invoiceTotalValue: number;
-  invoiceStatus: string;
+  invoiceStatus: InvoiceStatus;
   invoiceCreatedAt: Date;
 }
 
@@ -20,11 +21,11 @@ const Invoice: React.FC<InvoiceProps> = ({
   };
   // Determine status color based on invoice status
   const statusColor =
-    invoiceStatus === "PAID"
+    invoiceStatus === InvoiceStatus.PAID
       ? "text-green-600"
-      : invoiceStatus === "PENDING"
+      : invoiceStatus === InvoiceStatus.PENDING
       ? "text-yellow-600"
-      : invoiceStatus === "ARCHIVED"
+      : invoiceStatus === InvoiceStatus.ARCHIVED
       ? "text-blue-600"
       : "text-red-600";
 

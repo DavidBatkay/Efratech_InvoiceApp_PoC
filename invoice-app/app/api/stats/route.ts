@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { InvoiceStatus } from "@prisma/client";
 export async function GET() {
   const session = await auth(); // Adjust this if needed.
 
@@ -16,16 +17,16 @@ export async function GET() {
       where: { user_id: userId },
     });
     const pendingInvoices = await prisma.invoice.count({
-      where: { user_id: userId, status: "PENDING" },
+      where: { user_id: userId, status: InvoiceStatus.PENDING },
     });
     const paidInvoices = await prisma.invoice.count({
-      where: { user_id: userId, status: "PAID" },
+      where: { user_id: userId, status: InvoiceStatus.PAID },
     });
     const overdueInvoices = await prisma.invoice.count({
-      where: { user_id: userId, status: "OVERDUE" },
+      where: { user_id: userId, status: InvoiceStatus.OVERDUE },
     });
     const archivedInvoices = await prisma.invoice.count({
-      where: { user_id: userId, status: "ARCHIVED" },
+      where: { user_id: userId, status: InvoiceStatus.ARCHIVED },
     });
 
     const totalCustomers = await prisma.customer.count({
@@ -33,12 +34,18 @@ export async function GET() {
     });
 
     const totalRevenue = await prisma.invoice.aggregate({
-      where: { user_id: userId, status: { in: ["PAID", "ARCHIVED"] } },
+      where: {
+        user_id: userId,
+        status: { in: [InvoiceStatus.PAID, InvoiceStatus.ARCHIVED] },
+      },
       _sum: { totalValue: true },
     });
 
     const totalOutstanding = await prisma.invoice.aggregate({
-      where: { user_id: userId, status: { in: ["PENDING", "OVERDUE"] } },
+      where: {
+        user_id: userId,
+        status: { in: [InvoiceStatus.PENDING, InvoiceStatus.OVERDUE] },
+      },
       _sum: { totalValue: true },
     });
 

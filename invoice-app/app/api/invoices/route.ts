@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { LineItem } from "@prisma/client";
+import { InvoiceStatus, LineItem } from "@prisma/client";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -133,17 +133,17 @@ export async function GET(req: Request) {
 
     const whereCondition: {
       user_id: number;
-      status?: string | { not: string };
+      status?: InvoiceStatus | { not: InvoiceStatus };
     } = {
       user_id: session.user.user_id,
     };
 
     if (filter === "all") {
-      whereCondition.status = { not: "ARCHIVED" };
+      whereCondition.status = { not: InvoiceStatus.ARCHIVED };
     } else if (filter === "archived") {
-      whereCondition.status = "ARCHIVED";
+      whereCondition.status = InvoiceStatus.ARCHIVED;
     } else {
-      whereCondition.status = filter.toUpperCase();
+      whereCondition.status = filter.toUpperCase() as InvoiceStatus;
     }
 
     const invoices = await prisma.invoice.findMany({
