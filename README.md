@@ -21,16 +21,19 @@ It highlights:
 ## 🛠️ Tech Stack
 
 ### 🔧 Backend
+
 - **Next.js (App Router)** – SSR frontend + API endpoints
 - **Prisma ORM** – Type-safe database queries
-- **SQLite3** – Relational database
+- **PostgreSQL** – Relational database
 - **NextAuth** – Authentication using JWT & PrismaAdapter
 
 ### 🎨 Frontend
+
 - **React** with **TailwindCSS** – Responsive UI
 - **Shadcn/UI** – Component library for sleek components
 
 ### 🧰 Other Tools
+
 - **TypeScript** – Static typing
 - **Framer Motion** – Subtle UI animations
 
@@ -39,6 +42,7 @@ It highlights:
 ## 📦 Features
 
 ### ✅ Core Features
+
 - Create, Read, Update, and Delete invoices
 - Form validations with visual feedback
 - Filter invoices by status (Pending, Paid, Overdue, Archived)
@@ -47,21 +51,25 @@ It highlights:
 - Automatically calculate total invoice value
 
 ### 👥 Users
+
 - Authentication using email/password
 - Each user sees only their own invoices
 - Username displayed on dashboard
 
 ### 🧑‍💼 Customers
+
 - Add and manage customers
 - Invoices reference customer data instead of plain company names
 - Select customers from a dropdown in invoice form
 
 ### 💳 Payments
+
 - Mark invoices as paid
 - Payments stored as a separate entity
 - Payment sorting
 
 ### 📊 Dashboard
+
 - Overview stats for total invoices, revenue, pending payments, etc.
 - Compact animated widgets (bus ticker style)
 
