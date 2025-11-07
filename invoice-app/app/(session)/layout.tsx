@@ -1,20 +1,18 @@
 "use client";
+
 import AuthGuard from "@/components/authGuard";
 import Header from "@/components/header";
 import { Suspense } from "react";
 import Loading from "../loading";
-import { SessionProvider } from "next-auth/react";
-import { Session } from "next-auth";
+import { SessionProvider, useSession } from "next-auth/react";
 
 export default function SessionLayout({
   children,
-  session, // Accept session as a prop
-}: Readonly<{
+}: {
   children: React.ReactNode;
-  session?: Session;
-}>) {
+}) {
   return (
-    <SessionProvider session={session}>
+    <SessionProvider>
       <AuthGuard>
         <div className="min-h-screen flex flex-col">
           <Header />
