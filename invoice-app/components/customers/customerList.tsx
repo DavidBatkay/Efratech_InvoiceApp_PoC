@@ -1,10 +1,12 @@
+// CustomerList.tsx
 "use client";
-
 import { useEffect, useState } from "react";
-import CustomerCard from "./customerCard";
-import { Button } from "@/components/ui/button";
 import CreateCustomerButton from "./createCustomerButton";
 import { useCustomerAPI } from "@/app/api/__calls__/useCustomerAPI";
+// adjust this import to your real Table component path
+import Table from "../table/Table";
+import { MRT_ColumnDef, MRT_SortingState } from "mantine-react-table";
+
 interface Customer {
   id: string;
   customerName: string;
@@ -14,14 +16,17 @@ interface Customer {
 
 const CustomerList: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [sortBy, setSortBy] = useState<"customerName" | "createdAt">(
-    "createdAt"
-  );
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [sorting, setSorting] = useState<MRT_SortingState>([
+    { id: "createdAt", desc: true },
+  ]);
   const { fetchCustomers } = useCustomerAPI();
+
   useEffect(() => {
     const handleFetchCustomers = async () => {
       try {
+        const currentSort = sorting[0] ?? { id: "createdAt", desc: true };
+        const sortBy = currentSort.id as "customerName" | "createdAt";
+        const sortOrder = currentSort.desc ? "desc" : "asc";
         const data = await fetchCustomers(sortBy, sortOrder);
         if (data.error) throw new Error(data.error);
         setCustomers(data);
@@ -29,35 +34,39 @@ const CustomerList: React.FC = () => {
         console.error(error);
       }
     };
-
     handleFetchCustomers();
-  }, [sortBy, sortOrder, fetchCustomers]);
+  }, [sorting, fetchCustomers]);
+
+  const columns: MRT_ColumnDef<Customer>[] = [
+    {
+      accessorKey: "customerName",
+      header: "Name",
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+      enableSorting: false,
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created",
+      Cell: ({ cell }) =>
+        new Date(cell.getValue<string>()).toLocaleString(undefined, {
+          dateStyle: "medium",
+          timeStyle: "short",
+        }),
+    },
+  ];
 
   return (
-    <div>
-      <div className="flex gap-2 mb-4">
-        <CreateCustomerButton />
-        <Button
-          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-          variant="outline"
-        >
-          Order {sortOrder === "asc" ? "Descending" : "Ascending"}
-        </Button>
-        <Button
-          onClick={() =>
-            setSortBy(sortBy === "customerName" ? "createdAt" : "customerName")
-          }
-          variant="outline"
-        >
-          Sort by {sortBy === "customerName" ? "Newest" : "Name"}
-        </Button>
-      </div>
-      <div className="p-2 border-b grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {customers.map((customer) => (
-          <CustomerCard key={customer.id} customer={customer} />
-        ))}
-      </div>
-    </div>
+    <Table
+      columns={columns}
+      data={customers}
+      manualSorting
+      sorting={sorting}
+      onSortingChange={setSorting}
+      topToolbarActions={<CreateCustomerButton />}
+    />
   );
 };
 
