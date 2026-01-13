@@ -71,6 +71,6 @@ It highlights:
 ### 📊 Dashboard
 
 - Overview stats for total invoices, revenue, pending payments, etc.
-- Compact animated widgets (bus ticker style)
+- Compact animated widgets
 
 ---
