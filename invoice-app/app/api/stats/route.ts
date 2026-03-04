@@ -75,7 +75,7 @@ export async function GET() {
         archivedInvoices: archivedInvoices || "No data",
         totalCustomers: totalCustomers || "No data",
         totalRevenue: totalRevenue._sum.totalValue || "No data",
-        totalOutstanding: totalOutstanding._sum.totalValue || "No data",
+        totalOutstanding: totalOutstanding._sum.totalValue + " $" || "No data",
         favoriteCustomer: favoriteCustomerName,
       }),
       { status: 200 }
