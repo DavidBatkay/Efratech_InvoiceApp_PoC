@@ -3,22 +3,21 @@
 import { useEffect, useState } from "react";
 import CreateCustomerButton from "./createCustomerButton";
 import { useCustomerAPI } from "@/app/api/__calls__/useCustomerAPI";
-// adjust this import to your real Table component path
 import Table from "../table/Table";
-import { MRT_ColumnDef, MRT_SortingState } from "mantine-react-table";
+import { MRT_SortingState } from "material-react-table";
 
-interface Customer {
-  id: string;
-  customerName: string;
-  email: string;
-  createdAt: string;
-}
+import { customerSchema, type Customer } from "./schema/customer";
+import { Button } from "@mui/material";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 const CustomerList: React.FC = () => {
-  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [customers, setCustomers] = useState<Customer[] | undefined>(undefined);
+
   const [sorting, setSorting] = useState<MRT_SortingState>([
     { id: "createdAt", desc: true },
   ]);
+  const pathname = usePathname();
   const { fetchCustomers } = useCustomerAPI();
 
   useEffect(() => {
@@ -27,44 +26,32 @@ const CustomerList: React.FC = () => {
         const currentSort = sorting[0] ?? { id: "createdAt", desc: true };
         const sortBy = currentSort.id as "customerName" | "createdAt";
         const sortOrder = currentSort.desc ? "desc" : "asc";
+
         const data = await fetchCustomers(sortBy, sortOrder);
         if (data.error) throw new Error(data.error);
+
         setCustomers(data);
       } catch (error) {
         console.error(error);
+        setCustomers([]); // Stop loading state on error
       }
     };
     handleFetchCustomers();
   }, [sorting, fetchCustomers]);
 
-  const columns: MRT_ColumnDef<Customer>[] = [
-    {
-      accessorKey: "customerName",
-      header: "Name",
-    },
-    {
-      accessorKey: "email",
-      header: "Email",
-      enableSorting: false,
-    },
-    {
-      accessorKey: "createdAt",
-      header: "Created",
-      Cell: ({ cell }) =>
-        new Date(cell.getValue<string>()).toLocaleString(undefined, {
-          dateStyle: "medium",
-          timeStyle: "short",
-        }),
-    },
-  ];
-
   return (
     <Table
-      columns={columns}
+      title="Customers"
+      schema={customerSchema.fields}
       data={customers}
-      manualSorting
+      manualSorting={true}
       sorting={sorting}
       onSortingChange={setSorting}
+      actions={(row) => (
+        <Button component={Link} href={`${pathname}/${row.id}`}>
+          View
+        </Button>
+      )}
       topToolbarActions={<CreateCustomerButton />}
     />
   );
