@@ -1,6 +1,3 @@
-// 1. The Generic Schema Class (You can move this to a shared utils folder later)
-import React from "react";
-
 export interface SchemaField<T> {
   dataIndex: Extract<keyof T, string>;
   title: string;

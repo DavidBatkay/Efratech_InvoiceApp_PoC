@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 
 export default function LogoutButton({
   handleLogOut,
@@ -7,14 +6,22 @@ export default function LogoutButton({
   handleLogOut: () => void;
 }) {
   return (
-    <Link href="/login">
-      <button
-        onClick={handleLogOut}
-        type="button"
-        className="relative inline-flex bg-gradient-to-br from-slate-400 to-slate-300 items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg  px-5 hover:bg-gradient-to-tl hover:from-slate-500 hover:to-slate-600 transition-all duration-100"
-      >
+    <button
+      onClick={handleLogOut}
+      type="button"
+      className="
+        relative inline-flex items-center justify-center 
+        px-3 py-1 
+        overflow-hidden text-sm font-semibold 
+        text-white transition-all duration-200 
+        bg-white/10 hover:bg-red-500/20 
+        border border-white/20 hover:border-red-500/50 
+        rounded-lg group
+      "
+    >
+      <span className="relative group-hover:text-red-400 transition-colors">
         Log Out
-      </button>
-    </Link>
+      </span>
+    </button>
   );
 }

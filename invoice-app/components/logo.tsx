@@ -8,11 +8,9 @@ import { useState } from "react";
 
 export default function Logo() {
   const controls = useAnimation();
-  const [isHovered, setIsHovered] = useState(false);
   const [currentRotation, setCurrentRotation] = useState(0);
 
   const handleHoverStart = async () => {
-    setIsHovered(true);
     controls.start({
       rotate: [currentRotation, currentRotation + 360],
       transition: { repeat: Infinity, duration: 2, ease: "linear" },
@@ -20,9 +18,9 @@ export default function Logo() {
   };
 
   const handleHoverEnd = async () => {
-    setIsHovered(false);
     const nextFullRotation = Math.ceil(currentRotation / 360) * 360 + 360;
     setCurrentRotation(nextFullRotation);
+
     await controls.start({
       rotate: nextFullRotation,
       transition: { duration: 0.8, ease: "easeOut" },
@@ -30,15 +28,23 @@ export default function Logo() {
   };
 
   return (
-    <div className="flex">
-      <Link href="/dashboard">
+    <div className="flex items-center justify-center">
+      <Link href="/dashboard" className="flex items-center">
         <motion.div
           animate={controls}
           onHoverStart={handleHoverStart}
           onHoverEnd={handleHoverEnd}
-          className="cursor-pointer"
+          className="cursor-pointer flex items-center justify-center"
+          style={{ transformOrigin: "center center" }}
         >
-          <Image src={imagePath} alt="icon" width="80" height="80" priority />
+          <Image
+            src={imagePath}
+            alt="ModuFlow Logo"
+            width={60}
+            height={60}
+            className="block"
+            priority
+          />
         </motion.div>
       </Link>
     </div>

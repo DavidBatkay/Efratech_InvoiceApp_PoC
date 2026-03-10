@@ -19,11 +19,11 @@ enum InvoiceStatus {
 
 model Invoice {
   id         Int       @id @default(autoincrement())
-  customerId Int? // Nullable so we can remove the relation if the customer is deleted
-  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull) // ✅ Set to NULL instead of deleting invoice
+  customerId Int? 
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
-  customerName   String? // ✅ Store customer name separately
-  customerEmail  String? // ✅ Store customer email separately (optional)
+  customerName   String? 
+  customerEmail  String? 
   dateOfCreation DateTime   @default(now())
   totalValue     Float
   invoiceNumber  String     @unique
@@ -34,11 +34,9 @@ model Invoice {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
-  // Foreign key to User model
   user_id Int
   user    User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
-  // Foreign key to Payment model
   payment   Payment? @relation(fields: [paymentId], references: [id])
   paymentId Int?
 }
@@ -49,16 +47,16 @@ model LineItem {
   quantity    Int
   unitPrice   Float
   invoiceId   Int
-  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade) // ✅ Add Cascade Delete here
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade) 
 }
 
 model Payment {
   id         Int       @id @default(autoincrement())
   invoiceId  Int       @unique
-  customerId Int? // Nullable so we can remove the relation if the customer is deleted
+  customerId Int? 
   customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   amount     Float
-  createdAt  DateTime  @default(now()) // Tracks when the payment was made
+  createdAt  DateTime  @default(now()) 
   Invoice    Invoice[]
   notes      String?
   user_id    Int
@@ -75,7 +73,7 @@ model User {
   Payment   Payment[]
   Customer  Customer[]
 
-  @@map("users") // Optional: maps to "users" table in the database
+  @@map("users") 
 }
 
 model Customer {
